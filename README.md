@@ -1,9 +1,5 @@
 # LLM Cross-Model Evaluation
 
-cat > README.md << 'EOF'
-# LLM Cross-Model Evaluation
-
-
 ## Experiments
 
 **Experiment 1 – Cross-evaluation on generated continuations**
