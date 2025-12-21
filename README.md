@@ -9,9 +9,16 @@
 - We compute: 
   - The token-level log-likelihoodof that continuation under Model A
   - The token-lebel log-likelihoodof the same continuation under ModelB 
-- We compare average log-likelihoods
+- Compare likelihoods
 
 **Experiment 2 – Cross-evaluation on fixed canonical text**
 - Take a fixed text that both models almost surely saw during training(we take first page of US constitution) 
 For windows of text, we compte token-leve log-likekihood under both models A and B 
-- Compare 
+- Compare likelihoods
+
+## Code layout 
+
+- `src/experiments/model_loading.py` - load models and tokenizer
+- `src/experiments/logprob_utils.py` - compute token-level log-probabilities
+- `src/experiments/run_experiment_01_cross_eval.py` - run exp 1 
+- `src/experiments/run_experiment_02_cross_eval.py` - run exp 2
