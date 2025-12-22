@@ -1,1 +1,0 @@
-prompt_id,prompt,continuation_text,token_idx,token_id,token_str,p_a,p_b,logp_a,logp_b,delta_logp,ratio_pA_over_pB,log10_ratio

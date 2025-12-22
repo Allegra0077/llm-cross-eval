@@ -22,12 +22,13 @@ class TokenScore:
     logp_b: float
     p_b: float
 
+    #idk yet whether to use ratio of probs or logprobs for comparison??
+    
     @property
     def delta_logp(self) -> float:
         # log pA - log pB = log (pA / pB) --> to use for comparison step
         return self.logp_a - self.logp_b
 
-    #idk yet whether to use ratio of probs or logprobs for comparison??
     @property
     def ratio_pA_over_pB(self) -> float:
         # pA/pB, computed stably via logs
@@ -55,7 +56,8 @@ def _logprobs_next_token_matrix(model: PreTrainedModel, input_ids: torch.Tensor)
 
 
 def _tok_str(tokenizer: PreTrainedTokenizerBase, token_id: int) -> str:
-    # raw spacing behavior 
+    # take into account raw token form (with spaces, punctuation, etc)
+    # !! GPT-2 encodes spacing as part of the token -> token-level likelihood comparisosn can be sensitive to this
     return tokenizer.decode([token_id], clean_up_tokenization_spaces=False)
 
 

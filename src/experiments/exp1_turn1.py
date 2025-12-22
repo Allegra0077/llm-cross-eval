@@ -38,6 +38,7 @@ def main():
 
     with out_csv.open("w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
+        """
         w.writerow([
             "prompt_id", "prompt",
             "continuation_text",
@@ -47,6 +48,14 @@ def main():
             "delta_logp",
             "ratio_pA_over_pB",
             "log10_ratio",
+        ])
+        """
+        w.writerow([
+            "prompt_id", "prompt",
+            "continuation_text",
+            "token_idx", "token_id", "token_str",
+            "p_a", "p_b",
+            "ratio_pA_over_pB",
         ])
 
         for pid, prompt in enumerate(PROMPTS):
@@ -63,6 +72,7 @@ def main():
                 temperature=0.7,
                 top_p=0.9,
                 pad_token_id=tokenizer.eos_token_id,
+                repetition_penalty=1.1 # prompt0 repeated same sentence over and over without this
             )
 
             cont_ids = gen[0, input_ids.shape[1]:]
@@ -87,10 +97,7 @@ def main():
                     continuation_text,
                     s.idx, s.token_id, s.token_str,
                     s.p_a, s.p_b,
-                    s.logp_a, s.logp_b,
-                    s.delta_logp,
                     s.ratio_pA_over_pB,
-                    s.log10_ratio,
                 ])
 
     print("\nSaved:", out_csv)
