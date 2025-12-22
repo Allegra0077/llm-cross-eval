@@ -35,7 +35,7 @@ def clean_pdf_text(text: str) -> str:
 def main():
     raw_text = DATA_PATH.read_text(encoding="utf-8")
     text = clean_pdf_text(raw_text)
-    
+
     device = "cpu"
 
     tokenizer, model_a, model_b = load_two_models_same_family(device=device)
@@ -60,7 +60,7 @@ def main():
         w = csv.writer(f)
         w.writerow([
             "model_a", "model_b",
-            "token_pos_in_text",
+            "token_idx",
             "token_id", "token_str",
             "p_a", "p_b",
             "ratio_pA_over_pB",
