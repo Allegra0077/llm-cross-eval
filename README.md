@@ -12,7 +12,7 @@
 - Compare likelihoods
 
 **Experiment 2 – Cross-evaluation on fixed canonical text**
-- Take a fixed text that both models almost surely saw during training (we take first page of US constitution) 
+- Take a fixed text that both models almost surely saw during training (we take Article I, Sections 1 and part of Section 2 of US constitution) 
 - For windows of text, we compte token-leve log-likekihood under both models A and B 
 - Compare likelihoods
 
