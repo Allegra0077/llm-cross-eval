@@ -1,5 +1,9 @@
 # LLM Cross-Model Evaluation
 
+This repository implements controlled experiments comparing token-level
+likelihoods between two causal language models of the same family
+(GPT-2 and GPT-2-medium).
+
 ## Experiments
 
 **Experiment 1 – Cross-evaluation on generated continuations**
@@ -13,7 +17,7 @@
 
 **Experiment 2 – Cross-evaluation on fixed canonical text**
 - Take a fixed text that both models almost surely saw during training (we take Article I, Sections 1 and part of Section 2 of US constitution) 
-- We compte token-level likekihood under both models A and B 
+- We compte token-level likelihoods under both models A and B 
 - Compare likelihoods
 
 ## Code layout 
