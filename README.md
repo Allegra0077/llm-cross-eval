@@ -2,7 +2,7 @@
 
 This repository implements controlled experiments comparing token-level
 likelihoods between two causal language models of the same family
-(GPT-2 and GPT-2-medium).
+(GPT-2 (A) and GPT-2-medium (B)).
 
 ## Experiments
 
@@ -12,7 +12,7 @@ likelihoods between two causal language models of the same family
 - Model A generates a continuation.
 - We compute: 
   - The token-level likelihood of that continuation under Model A
-  - The token-lebel likelihood of the same continuation under Model B 
+  - The token-level likelihood of the same continuation under Model B 
 - Compare likelihoods
 
 **Experiment 2 – Cross-evaluation on fixed canonical text**
