@@ -1,6 +1,6 @@
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
-def load_models(
+def load_two_models_same_family(
         model_name_1: str = 'gpt2',
         model_name_2: str = 'gpt2-medium', 
         device: str = 'cpu', 

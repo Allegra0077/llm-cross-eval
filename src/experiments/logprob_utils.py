@@ -23,7 +23,7 @@ class TokenScore:
     p_b: float
 
     @property
-    def delta_logprob(self) -> float:
+    def delta_logp(self) -> float:
         # log pA - log pB = log (pA / pB) --> to use for comparison step
         return self.logp_a - self.logp_b
 
@@ -47,7 +47,8 @@ def _logprobs_next_token_matrix(model: PreTrainedModel, input_ids: torch.Tensor)
     Shape: (seq_len - 1, vocab)
     Where row i corresponds to distribution for token at position i+1.
     """
-    outputs = model(input_ids=input_ids)
+    attention_mask = torch.ones_like(input_ids)
+    outputs = model(input_ids=input_ids, attention_mask=attention_mask)
     logits = outputs.logits  # (1, seq_len, vocab)
     log_probs = torch.log_softmax(logits[:, :-1, :], dim=-1)  # (1, seq_len-1, vocab)
     return log_probs[0]  # (seq_len-1, vocab)
