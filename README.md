@@ -21,4 +21,4 @@
 - `src/experiments/model_loading.py` - load models and tokenizer
 - `src/experiments/logprob_utils.py` - compute token-level probabilities
 - `src/experiments/exp1_turn1.py` - run exp 1 
-- `src/experiments/exp2_turn1.py` - run exp 2
+- `src/experiments/exp2_canonical.py` - run exp 2
