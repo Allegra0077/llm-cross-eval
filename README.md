@@ -20,5 +20,5 @@ For windows of text, we compte token-leve log-likekihood under both models A and
 
 - `src/experiments/model_loading.py` - load models and tokenizer
 - `src/experiments/logprob_utils.py` - compute token-level log-probabilities
-- `src/experiments/run_experiment_01_cross_eval.py` - run exp 1 
-- `src/experiments/run_experiment_02_cross_eval.py` - run exp 2
+- `src/experiments/exp1_turn1.py` - run exp 1 
+- `src/experiments/exp2_turn1.py` - run exp 2
