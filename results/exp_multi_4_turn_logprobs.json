@@ -1,0 +1,702 @@
+[
+    {
+        "conversation_id": "9d7485f119a740678e873e0a1a3d70ae",
+        "logprob_turns_1": -65.82434690184891,
+        "logprob_turns_2": -47.023696400938206,
+        "logprob_turns_3": -43.66291983402334,
+        "logprob_turns_4": -40.03260872446117
+    },
+    {
+        "conversation_id": "665f62f074b24a4d94740784b6331e70",
+        "logprob_turns_1": -88.68972608726472,
+        "logprob_turns_2": -70.78916463442147,
+        "logprob_turns_3": -63.85591092519462,
+        "logprob_turns_4": -56.5198769075796
+    },
+    {
+        "conversation_id": "cb8051b9e978450cadceb3ad32cc75fe",
+        "logprob_turns_1": -72.4418955562287,
+        "logprob_turns_2": -70.97697674040683,
+        "logprob_turns_3": -66.74941743991803,
+        "logprob_turns_4": -67.3820448917104
+    },
+    {
+        "conversation_id": "f6ed8ce927db414b89eaa23854137a5e",
+        "logprob_turns_1": -60.868303914438,
+        "logprob_turns_2": -55.93150189497101,
+        "logprob_turns_3": -61.539030594503856,
+        "logprob_turns_4": -58.76888004070497
+    },
+    {
+        "conversation_id": "ea10556c0ab24b18869c048938068c37",
+        "logprob_turns_1": -116.62847334891558,
+        "logprob_turns_2": -136.65565705951303,
+        "logprob_turns_3": -125.52123059285805,
+        "logprob_turns_4": -121.66380658838898
+    },
+    {
+        "conversation_id": "e1c93e10440f4edcac1dd0c4770af156",
+        "logprob_turns_1": -41.94003888615407,
+        "logprob_turns_2": -59.00153334392235,
+        "logprob_turns_3": -51.67352638184093,
+        "logprob_turns_4": -47.02432113594841
+    },
+    {
+        "conversation_id": "6cd24bbeede04de4bece640bdc255332",
+        "logprob_turns_1": -51.50889505885789,
+        "logprob_turns_2": -60.49926486675338,
+        "logprob_turns_3": -65.16713853542205,
+        "logprob_turns_4": -54.18857665552332
+    },
+    {
+        "conversation_id": "73977fd6b49b4b499e9556b695e56f77",
+        "logprob_turns_1": -69.36942443624139,
+        "logprob_turns_2": -80.38721088456805,
+        "logprob_turns_3": -75.02425561056225,
+        "logprob_turns_4": -74.52766519022407
+    },
+    {
+        "conversation_id": "5230590049644a0a88984cdc0295ccff",
+        "logprob_turns_1": -61.98173547114129,
+        "logprob_turns_2": -89.15681869997206,
+        "logprob_turns_3": -85.47594969892089,
+        "logprob_turns_4": -77.9628536338023
+    },
+    {
+        "conversation_id": "83911015a00e4a2c85acd86851664e3b",
+        "logprob_turns_1": -96.37210885502282,
+        "logprob_turns_2": -99.68823643168435,
+        "logprob_turns_3": -102.2702526213834,
+        "logprob_turns_4": -104.71563696209341
+    },
+    {
+        "conversation_id": "11421b1bd55b4624ad32a31a16d8156c",
+        "logprob_turns_1": -109.73084833291068,
+        "logprob_turns_2": -74.4262640159377,
+        "logprob_turns_3": -67.19476080685814,
+        "logprob_turns_4": -64.49049367382577
+    },
+    {
+        "conversation_id": "5cea0041ccb94d29aaed28121da5a93a",
+        "logprob_turns_1": -72.90206121793017,
+        "logprob_turns_2": -74.04822090733796,
+        "logprob_turns_3": -69.88430049130693,
+        "logprob_turns_4": -69.9441880537197
+    },
+    {
+        "conversation_id": "75c1cd85e5a5457593d1a862677d2316",
+        "logprob_turns_1": -203.22185716289096,
+        "logprob_turns_2": -151.02396760221689,
+        "logprob_turns_3": -122.89022002751472,
+        "logprob_turns_4": -125.10075776379392
+    },
+    {
+        "conversation_id": "ebcb7e4085424f0c898d25636ab27a04",
+        "logprob_turns_1": -110.9440836069407,
+        "logprob_turns_2": -82.3245128456046,
+        "logprob_turns_3": -76.45799099291048,
+        "logprob_turns_4": -82.16577229498623
+    },
+    {
+        "conversation_id": "5d6884b46e784c90ad20d4f67571f476",
+        "logprob_turns_1": -48.71312463376671,
+        "logprob_turns_2": -46.40416961858864,
+        "logprob_turns_3": -49.56625615700608,
+        "logprob_turns_4": -37.4527059511729
+    },
+    {
+        "conversation_id": "07b7018a030944379149f6f9a8962cf0",
+        "logprob_turns_1": -80.63790685124695,
+        "logprob_turns_2": -67.77632838045247,
+        "logprob_turns_3": -63.49108696053736,
+        "logprob_turns_4": -65.47816862352192
+    },
+    {
+        "conversation_id": "c47f73a837034d28bfd8701b45b5d3f6",
+        "logprob_turns_1": -204.63950612673057,
+        "logprob_turns_2": -109.77444082132769,
+        "logprob_turns_3": -74.0270644538837,
+        "logprob_turns_4": -76.79553614322509
+    },
+    {
+        "conversation_id": "dede8b2f19d74568b3e30b43b033bd86",
+        "logprob_turns_1": -155.40758024918432,
+        "logprob_turns_2": -92.67162681376101,
+        "logprob_turns_3": -89.37700297949323,
+        "logprob_turns_4": -87.02909921865557
+    },
+    {
+        "conversation_id": "48783e85ae4949f1bf21d1e0c24378fb",
+        "logprob_turns_1": -133.2158358693123,
+        "logprob_turns_2": -126.95236665010452,
+        "logprob_turns_3": -120.38055658340454,
+        "logprob_turns_4": -124.91874071955681
+    },
+    {
+        "conversation_id": "f39ca2f6e9254d4fbb9fdc85ae48fa13",
+        "logprob_turns_1": -50.92350691836327,
+        "logprob_turns_2": -51.08943074895069,
+        "logprob_turns_3": -43.786050882190466,
+        "logprob_turns_4": -43.73130514100194
+    },
+    {
+        "conversation_id": "8d1322e847144269a8dc6e34a22410ee",
+        "logprob_turns_1": -196.57224138469792,
+        "logprob_turns_2": -225.75612787883983,
+        "logprob_turns_3": -232.3339757648473,
+        "logprob_turns_4": -232.98344539782647
+    },
+    {
+        "conversation_id": "d0f1ac210ffe4073b031b3dd5f77feb1",
+        "logprob_turns_1": -103.8664432130754,
+        "logprob_turns_2": -116.25122373132035,
+        "logprob_turns_3": -106.53617214341648,
+        "logprob_turns_4": -99.99136767163873
+    },
+    {
+        "conversation_id": "2bb83f46fa5041ba851a4d4515bc6cce",
+        "logprob_turns_1": -111.9778278316785,
+        "logprob_turns_2": -138.07876155884355,
+        "logprob_turns_3": -117.8836093532941,
+        "logprob_turns_4": -109.7187941694666
+    },
+    {
+        "conversation_id": "89b8191a6b364fff81f7b9c4a997a51a",
+        "logprob_turns_1": -67.4458486239946,
+        "logprob_turns_2": -79.94723848483409,
+        "logprob_turns_3": -62.17051718594303,
+        "logprob_turns_4": -57.01868290917264
+    },
+    {
+        "conversation_id": "cb732caf5af2489388d1bf6c1f7819db",
+        "logprob_turns_1": -80.55210135876086,
+        "logprob_turns_2": -100.31485885375787,
+        "logprob_turns_3": -85.12729823589325,
+        "logprob_turns_4": -86.13068640232069
+    },
+    {
+        "conversation_id": "0ead16871aa944e2ae3c3a8123b7f011",
+        "logprob_turns_1": -76.89015245732116,
+        "logprob_turns_2": -59.5061655276603,
+        "logprob_turns_3": -48.7349978755509,
+        "logprob_turns_4": -48.948845338967175
+    },
+    {
+        "conversation_id": "67e83848f0284a31ae4e692dc74ca979",
+        "logprob_turns_1": -114.57357628571344,
+        "logprob_turns_2": -139.8041995063813,
+        "logprob_turns_3": -133.272790954009,
+        "logprob_turns_4": -125.9389722349406
+    },
+    {
+        "conversation_id": "032bbfb1cbc343e08bed09bb13b4ade3",
+        "logprob_turns_1": -94.15118104498833,
+        "logprob_turns_2": -88.69402566552162,
+        "logprob_turns_3": -87.10617092996836,
+        "logprob_turns_4": -84.3840397009626
+    },
+    {
+        "conversation_id": "ccab39900c574cc7beddb588000a1949",
+        "logprob_turns_1": -125.32337765963075,
+        "logprob_turns_2": -132.94360738995567,
+        "logprob_turns_3": -130.2190758660288,
+        "logprob_turns_4": -91.28318324050599
+    },
+    {
+        "conversation_id": "ebc6344daeab4ca7b42d24b733ea4191",
+        "logprob_turns_1": -61.483557294122875,
+        "logprob_turns_2": -56.32124614715576,
+        "logprob_turns_3": -50.95992771349847,
+        "logprob_turns_4": -50.007480435073376
+    },
+    {
+        "conversation_id": "2d5592ab7cd84d2fac724dcf6c3fa555",
+        "logprob_turns_1": -119.82785359404807,
+        "logprob_turns_2": -119.68834305999917,
+        "logprob_turns_3": -115.6342378923473,
+        "logprob_turns_4": -106.95799112225359
+    },
+    {
+        "conversation_id": "bd3da8198ecb483e9ffdc9dadc2a2d24",
+        "logprob_turns_1": -183.15699756197137,
+        "logprob_turns_2": -183.35006905068394,
+        "logprob_turns_3": -181.09198157377023,
+        "logprob_turns_4": -175.17214927902705
+    },
+    {
+        "conversation_id": "77cc426aa7d9480a895e66742b39abd9",
+        "logprob_turns_1": -100.16746652126312,
+        "logprob_turns_2": -67.94476813077927,
+        "logprob_turns_3": -59.11261001229286,
+        "logprob_turns_4": -55.60018498171121
+    },
+    {
+        "conversation_id": "f2291ef889354258a9d419eb04cc3459",
+        "logprob_turns_1": -81.68979198811576,
+        "logprob_turns_2": -85.19571979041211,
+        "logprob_turns_3": -80.17947468464263,
+        "logprob_turns_4": -77.2234136289917
+    },
+    {
+        "conversation_id": "474673a841f44f048f3d966fcbe33153",
+        "logprob_turns_1": -83.84237696416676,
+        "logprob_turns_2": -80.10399036668241,
+        "logprob_turns_3": -69.98178639169782,
+        "logprob_turns_4": -69.38313992228359
+    },
+    {
+        "conversation_id": "d1025d4b9c1f47c2a94c505badfd168b",
+        "logprob_turns_1": -103.69954518193845,
+        "logprob_turns_2": -100.46132383774966,
+        "logprob_turns_3": -83.64311742596328,
+        "logprob_turns_4": -78.88116659875959
+    },
+    {
+        "conversation_id": "f1b1f87739d2496e8092e756fb52556c",
+        "logprob_turns_1": -113.5528787074727,
+        "logprob_turns_2": -113.40065159485675,
+        "logprob_turns_3": -103.41640923451632,
+        "logprob_turns_4": -97.16793941927608
+    },
+    {
+        "conversation_id": "2ea3864cb7884e97aaf45ac548f4ce91",
+        "logprob_turns_1": -101.62559537769994,
+        "logprob_turns_2": -42.966618697821104,
+        "logprob_turns_3": -35.32529103118941,
+        "logprob_turns_4": -36.64461579366781
+    },
+    {
+        "conversation_id": "99e2206bc1e74803939442b736d3f23c",
+        "logprob_turns_1": -645.1141205236398,
+        "logprob_turns_2": -63.08375355695584,
+        "logprob_turns_3": -59.91558412528377,
+        "logprob_turns_4": -55.28510715568846
+    },
+    {
+        "conversation_id": "4d74f2ed9610405f83b14b3f443d6243",
+        "logprob_turns_1": -346.5938180718463,
+        "logprob_turns_2": -118.84629664642804,
+        "logprob_turns_3": -117.16858068999048,
+        "logprob_turns_4": -104.28561686127023
+    },
+    {
+        "conversation_id": "49c9314f79164568b415d31affe2b486",
+        "logprob_turns_1": -217.9281759204987,
+        "logprob_turns_2": -210.02815435423736,
+        "logprob_turns_3": -204.451937550446,
+        "logprob_turns_4": -205.96640043984917
+    },
+    {
+        "conversation_id": "7866ed1d3ae54ba385968a8ace8cf6a0",
+        "logprob_turns_1": -2820.3499625747686,
+        "logprob_turns_2": -2629.250491812517,
+        "logprob_turns_3": -2644.225917142909,
+        "logprob_turns_4": -2640.715304844595
+    },
+    {
+        "conversation_id": "189fd5387f45485f860a401d9924eb63",
+        "logprob_turns_1": -157.06826217510377,
+        "logprob_turns_2": -54.38028947103081,
+        "logprob_turns_3": -59.0843465726892,
+        "logprob_turns_4": -76.03426248764913
+    },
+    {
+        "conversation_id": "7138c4dbb6d54ea9940ecccb9d475e2c",
+        "logprob_turns_1": -48.50459380401293,
+        "logprob_turns_2": -40.142958662006976,
+        "logprob_turns_3": -39.449427909397826,
+        "logprob_turns_4": -40.07409616001311
+    },
+    {
+        "conversation_id": "3a29d100027546fe937e94a260c1eaf8",
+        "logprob_turns_1": -345.4009070173506,
+        "logprob_turns_2": -339.89147692293017,
+        "logprob_turns_3": -129.26302614565694,
+        "logprob_turns_4": -119.2855732697734
+    },
+    {
+        "conversation_id": "b38e7bfe82fd4d6eaec8bc33737c2d3b",
+        "logprob_turns_1": -88.31178723774053,
+        "logprob_turns_2": -88.04853742517389,
+        "logprob_turns_3": -82.73411427148494,
+        "logprob_turns_4": -80.70912517734905
+    },
+    {
+        "conversation_id": "e5effa6318c14a58b20675181387b5d9",
+        "logprob_turns_1": -44.15566953050438,
+        "logprob_turns_2": -57.84410537453368,
+        "logprob_turns_3": -59.26058477605693,
+        "logprob_turns_4": -54.08891994226724
+    },
+    {
+        "conversation_id": "15b85371d06c4b4c8bf1b85ae1dc6573",
+        "logprob_turns_1": -112.86231460794806,
+        "logprob_turns_2": -79.2463778100464,
+        "logprob_turns_3": -63.162133242434265,
+        "logprob_turns_4": -67.27124651183055
+    },
+    {
+        "conversation_id": "78bfd72932474a05825f01422f16ae68",
+        "logprob_turns_1": -63.02285525924526,
+        "logprob_turns_2": -58.46810927125625,
+        "logprob_turns_3": -59.19416370042018,
+        "logprob_turns_4": -58.5473930327571
+    },
+    {
+        "conversation_id": "fbfb4ba048a642098f58520967b48bdf",
+        "logprob_turns_1": -174.46484694933048,
+        "logprob_turns_2": -178.02957420049972,
+        "logprob_turns_3": -134.71673867162,
+        "logprob_turns_4": -134.32578081610035
+    },
+    {
+        "conversation_id": "742f40c90e9d4b49a1f94302e22dbbab",
+        "logprob_turns_1": -103.69000203651376,
+        "logprob_turns_2": -112.5158584266901,
+        "logprob_turns_3": -110.27404794096947,
+        "logprob_turns_4": -103.48288963735104
+    },
+    {
+        "conversation_id": "7b13a5f538df412d90bf08055b0ebc74",
+        "logprob_turns_1": -248.1900225811405,
+        "logprob_turns_2": -259.82903319300385,
+        "logprob_turns_3": -252.8073820110876,
+        "logprob_turns_4": -260.0225427891128
+    },
+    {
+        "conversation_id": "7c17f83db9d940b798b0bf2ff7b76009",
+        "logprob_turns_1": -91.19406028353114,
+        "logprob_turns_2": -63.03810900495728,
+        "logprob_turns_3": -55.554177921648716,
+        "logprob_turns_4": -58.00803063518879
+    },
+    {
+        "conversation_id": "50675503ea794503a728ae6140fa1af4",
+        "logprob_turns_1": -105.41751242801547,
+        "logprob_turns_2": -123.88575528562069,
+        "logprob_turns_3": -119.84442333877087,
+        "logprob_turns_4": -118.40283362567425
+    },
+    {
+        "conversation_id": "88232007592e4435a92a759a153c7337",
+        "logprob_turns_1": -372.7298111416653,
+        "logprob_turns_2": -66.88220987507552,
+        "logprob_turns_3": -60.600549485663386,
+        "logprob_turns_4": -49.95231717911096
+    },
+    {
+        "conversation_id": "2318cd3910fc4c7ab000246776b1a20a",
+        "logprob_turns_1": -116.27261894894491,
+        "logprob_turns_2": -111.3430904745428,
+        "logprob_turns_3": -88.98639716544065,
+        "logprob_turns_4": -89.57017893916316
+    },
+    {
+        "conversation_id": "e4f3e24e875d46b781c8c765ccbcf814",
+        "logprob_turns_1": -92.23079907847568,
+        "logprob_turns_2": -91.90086454479024,
+        "logprob_turns_3": -81.40455762948841,
+        "logprob_turns_4": -81.02097944985144
+    },
+    {
+        "conversation_id": "ece8f0641ab04ae7bfd24f90f576c3af",
+        "logprob_turns_1": -292.33598143057566,
+        "logprob_turns_2": -117.7777823036615,
+        "logprob_turns_3": -57.62644229163541,
+        "logprob_turns_4": -48.057301155374866
+    },
+    {
+        "conversation_id": "657b8627d5264aea963c6c73ea1992ce",
+        "logprob_turns_1": -125.58340367302299,
+        "logprob_turns_2": -140.00409764796495,
+        "logprob_turns_3": -132.01675874926144,
+        "logprob_turns_4": -132.8585975691676
+    },
+    {
+        "conversation_id": "6cb0169605c541c08caf34517053368a",
+        "logprob_turns_1": -57.81142389087472,
+        "logprob_turns_2": -60.2406963893518,
+        "logprob_turns_3": -54.58663286687806,
+        "logprob_turns_4": -48.51309412100818
+    },
+    {
+        "conversation_id": "5d16c787fd404db7a7215397a852c5f5",
+        "logprob_turns_1": -85.165828761081,
+        "logprob_turns_2": -100.93474470424218,
+        "logprob_turns_3": -95.68547398264593,
+        "logprob_turns_4": -92.51655468135232
+    },
+    {
+        "conversation_id": "55aa7d52ab7c43fa8d1803cdad8dae30",
+        "logprob_turns_1": -111.38826868310571,
+        "logprob_turns_2": -95.0837936392054,
+        "logprob_turns_3": -84.87099762941943,
+        "logprob_turns_4": -86.4618448530091
+    },
+    {
+        "conversation_id": "1c329bd4bfa648b0a531bd56a47f994d",
+        "logprob_turns_1": -100.63822507576685,
+        "logprob_turns_2": -56.251514269199106,
+        "logprob_turns_3": -47.3716513423642,
+        "logprob_turns_4": -50.83451418642653
+    },
+    {
+        "conversation_id": "75c65ca28c074ccb86507cd01288aa0a",
+        "logprob_turns_1": -51.80076499097049,
+        "logprob_turns_2": -42.91204847255722,
+        "logprob_turns_3": -43.37106338515878,
+        "logprob_turns_4": -40.43440633546561
+    },
+    {
+        "conversation_id": "32efc847d8fa426a9b656273405c1a3c",
+        "logprob_turns_1": -87.85926589847531,
+        "logprob_turns_2": -103.95016762928572,
+        "logprob_turns_3": -102.40288737672381,
+        "logprob_turns_4": -97.54688183066901
+    },
+    {
+        "conversation_id": "6e02b0df6b174ffaa282690f7cfccb29",
+        "logprob_turns_1": -111.42628290317953,
+        "logprob_turns_2": -106.47557426342973,
+        "logprob_turns_3": -100.27457558116294,
+        "logprob_turns_4": -101.52253811954142
+    },
+    {
+        "conversation_id": "7c25859d282349dd8a3ace5bbacb1f06",
+        "logprob_turns_1": -156.68040535315959,
+        "logprob_turns_2": -156.82504394766505,
+        "logprob_turns_3": -154.14811159142647,
+        "logprob_turns_4": -152.76825710542641
+    },
+    {
+        "conversation_id": "23807eea4d42403f89122bc19e72f86d",
+        "logprob_turns_1": -257.1128669725731,
+        "logprob_turns_2": -250.84147286973894,
+        "logprob_turns_3": -233.26613707793877,
+        "logprob_turns_4": -215.3159555781167
+    },
+    {
+        "conversation_id": "4a6b9775be624bb0ad57d5eef43c13e4",
+        "logprob_turns_1": -101.60151044159466,
+        "logprob_turns_2": -101.81582025181888,
+        "logprob_turns_3": -110.76702608540597,
+        "logprob_turns_4": -105.33780359290506
+    },
+    {
+        "conversation_id": "f1150d50f1d64ead9ea741ce7ccade15",
+        "logprob_turns_1": -94.40280877728583,
+        "logprob_turns_2": -84.16970027219213,
+        "logprob_turns_3": -84.98850806052087,
+        "logprob_turns_4": -79.586540406528
+    },
+    {
+        "conversation_id": "28f2b1833f074cc99e8e0501c1b1cd90",
+        "logprob_turns_1": -58.21105303987861,
+        "logprob_turns_2": -51.054839020594954,
+        "logprob_turns_3": -52.30831237451639,
+        "logprob_turns_4": -47.21563791681547
+    },
+    {
+        "conversation_id": "a4fb690b2fff430eaa19a6ed7aa28ac2",
+        "logprob_turns_1": -122.33981037139893,
+        "logprob_turns_2": -46.9436549591436,
+        "logprob_turns_3": -54.748785106312766,
+        "logprob_turns_4": -53.33963130467441
+    },
+    {
+        "conversation_id": "5f0725d3a94842e98f6c1aaede508a43",
+        "logprob_turns_1": -55.24331098701805,
+        "logprob_turns_2": -56.21272141113877,
+        "logprob_turns_3": -53.045342004392296,
+        "logprob_turns_4": -43.92043387575541
+    },
+    {
+        "conversation_id": "8241c716997a47348384958c581411a6",
+        "logprob_turns_1": -1217.1560375231925,
+        "logprob_turns_2": -1313.473869144706,
+        "logprob_turns_3": -1241.7383530698762,
+        "logprob_turns_4": -1213.0129836234594
+    },
+    {
+        "conversation_id": "62e835fa58ed49129bcdee16d0b56910",
+        "logprob_turns_1": -156.63504330266733,
+        "logprob_turns_2": -159.24637896512286,
+        "logprob_turns_3": -164.9265598662314,
+        "logprob_turns_4": -167.00732887137565
+    },
+    {
+        "conversation_id": "b1fc86eb5d6f449689be490985e2dcad",
+        "logprob_turns_1": -547.3580561709969,
+        "logprob_turns_2": -93.55634998435147,
+        "logprob_turns_3": -88.30078989726704,
+        "logprob_turns_4": -85.21906097590067
+    },
+    {
+        "conversation_id": "91b350a27e8945158d8e80fbfeaf341b",
+        "logprob_turns_1": -86.46382442256436,
+        "logprob_turns_2": -82.06706038117409,
+        "logprob_turns_3": -88.27311696112156,
+        "logprob_turns_4": -88.44554024934769
+    },
+    {
+        "conversation_id": "bc5ad16eaadb44f8b4fdf5efafedec87",
+        "logprob_turns_1": -340.89617919356385,
+        "logprob_turns_2": -333.35456841607163,
+        "logprob_turns_3": -326.6262109336225,
+        "logprob_turns_4": -322.472346159101
+    },
+    {
+        "conversation_id": "7bba6f9ceaff4050906ddbfd76c4aefb",
+        "logprob_turns_1": -104.54747395787854,
+        "logprob_turns_2": -102.12912416132167,
+        "logprob_turns_3": -93.38052782416344,
+        "logprob_turns_4": -89.7652963171713
+    },
+    {
+        "conversation_id": "7b12d7818e7649d8b2c5352e175e37bb",
+        "logprob_turns_1": -89.54916022357065,
+        "logprob_turns_2": -86.73206439695787,
+        "logprob_turns_3": -89.21589532478356,
+        "logprob_turns_4": -85.20478394745805
+    },
+    {
+        "conversation_id": "52f49e585f02471999cfbfde97e5b5ae",
+        "logprob_turns_1": -79.9676808770746,
+        "logprob_turns_2": -56.64232991891913,
+        "logprob_turns_3": -59.766410128213465,
+        "logprob_turns_4": -62.82376897055656
+    },
+    {
+        "conversation_id": "dd306b39ca6f4921a55670875b368b36",
+        "logprob_turns_1": -88.25201296573505,
+        "logprob_turns_2": -83.10756452074565,
+        "logprob_turns_3": -92.51331692971871,
+        "logprob_turns_4": -91.08821793156676
+    },
+    {
+        "conversation_id": "46e41babd08f41f9a0863ff39992f473",
+        "logprob_turns_1": -47.99532984569669,
+        "logprob_turns_2": -58.66595193184912,
+        "logprob_turns_3": -53.38523802906275,
+        "logprob_turns_4": -49.16632130742073
+    },
+    {
+        "conversation_id": "6ee4a3d8dbcd4a2f888627d032b85b41",
+        "logprob_turns_1": -115.14045232554781,
+        "logprob_turns_2": -118.12192914576735,
+        "logprob_turns_3": -121.42572814004961,
+        "logprob_turns_4": -116.79871626693057
+    },
+    {
+        "conversation_id": "71b420bde30b48149deb464ab457c82e",
+        "logprob_turns_1": -137.0152883726405,
+        "logprob_turns_2": -128.24904845467745,
+        "logprob_turns_3": -117.0930536125179,
+        "logprob_turns_4": -119.90968476586568
+    },
+    {
+        "conversation_id": "d38c1844bff44809b9084e883e9f47a0",
+        "logprob_turns_1": -65.90279365889728,
+        "logprob_turns_2": -75.27903416007757,
+        "logprob_turns_3": -71.62416545301676,
+        "logprob_turns_4": -66.70128232054412
+    },
+    {
+        "conversation_id": "7cb59eb48b6e497ab8b254a8a6ebd63c",
+        "logprob_turns_1": -52.22529668570496,
+        "logprob_turns_2": -57.53775669103197,
+        "logprob_turns_3": -45.598510074247315,
+        "logprob_turns_4": -50.49602635350311
+    },
+    {
+        "conversation_id": "b2899428253f4b52ab0f2d0b081b4e6e",
+        "logprob_turns_1": -70.09062839625147,
+        "logprob_turns_2": -73.48986719697132,
+        "logprob_turns_3": -67.13423129336047,
+        "logprob_turns_4": -67.43458706123897
+    },
+    {
+        "conversation_id": "b9b4340eb0604fca88c54288e05d0bd9",
+        "logprob_turns_1": -136.89495003539196,
+        "logprob_turns_2": -133.427160498366,
+        "logprob_turns_3": -120.00542108551599,
+        "logprob_turns_4": -115.44363539270125
+    },
+    {
+        "conversation_id": "3f0c0697d64048f493baf73c5ea5bd10",
+        "logprob_turns_1": -167.4153768592514,
+        "logprob_turns_2": -134.04155302442814,
+        "logprob_turns_3": -132.26922108198778,
+        "logprob_turns_4": -135.9442309671831
+    },
+    {
+        "conversation_id": "900cc1ad407d4727a8c196a5192edb01",
+        "logprob_turns_1": -83.85898064242289,
+        "logprob_turns_2": -89.24175016419548,
+        "logprob_turns_3": -95.09673616411004,
+        "logprob_turns_4": -94.69244558980608
+    },
+    {
+        "conversation_id": "f5b5bb9023dc401cbc18dd6e36cdcba5",
+        "logprob_turns_1": -82.84819241502373,
+        "logprob_turns_2": -68.271908273804,
+        "logprob_turns_3": -66.86751815174648,
+        "logprob_turns_4": -61.14384545679968
+    },
+    {
+        "conversation_id": "af5f015ec5a5480eb334478e4c1cc68a",
+        "logprob_turns_1": -141.3015399251599,
+        "logprob_turns_2": -143.60502178018214,
+        "logprob_turns_3": -140.50994771369733,
+        "logprob_turns_4": -131.94890841981396
+    },
+    {
+        "conversation_id": "40b065c726944b4ea86509de05bf3553",
+        "logprob_turns_1": -74.01976143661886,
+        "logprob_turns_2": -66.54621339589357,
+        "logprob_turns_3": -72.13277864828706,
+        "logprob_turns_4": -65.74458870571107
+    },
+    {
+        "conversation_id": "d94233bf053e4b188e0f2b74693c29b8",
+        "logprob_turns_1": -104.75483466498554,
+        "logprob_turns_2": -103.40359422937036,
+        "logprob_turns_3": -99.65679291635752,
+        "logprob_turns_4": -102.00334913283587
+    },
+    {
+        "conversation_id": "ec24f3ca688044119c0e02fa4af2f78d",
+        "logprob_turns_1": -85.29125094886695,
+        "logprob_turns_2": -85.9438611653959,
+        "logprob_turns_3": -80.43958441825089,
+        "logprob_turns_4": -79.59532723170105
+    },
+    {
+        "conversation_id": "f2aee8eb704f44f3aa5f1ddac4b18daf",
+        "logprob_turns_1": -106.48832770551962,
+        "logprob_turns_2": -97.01700966137105,
+        "logprob_turns_3": -95.27080663593279,
+        "logprob_turns_4": -93.48891758316677
+    },
+    {
+        "conversation_id": "e9f483c8514a43c4a81ebe3dbea9b7bb",
+        "logprob_turns_1": -96.45842352526961,
+        "logprob_turns_2": -105.74017481091096,
+        "logprob_turns_3": -99.46525757364361,
+        "logprob_turns_4": -96.69633178767435
+    },
+    {
+        "conversation_id": "326b546bb11d4947ac06037b51c06a19",
+        "logprob_turns_1": -69.8516935929656,
+        "logprob_turns_2": -68.41585122421384,
+        "logprob_turns_3": -63.28341509588063,
+        "logprob_turns_4": -65.28067107871175
+    },
+    {
+        "conversation_id": "d846196d6ef642b5a7d677252ec65a2a",
+        "logprob_turns_1": -145.39575432497986,
+        "logprob_turns_2": -144.82173334188155,
+        "logprob_turns_3": -145.02959507290052,
+        "logprob_turns_4": -144.9440030680389
+    }
+]
