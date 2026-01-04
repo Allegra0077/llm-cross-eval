@@ -1,5 +1,6 @@
 import os
 import json
+import time
 
 from datasets import load_dataset
 from transformers import AutoModelForCausalLM, AutoTokenizer
@@ -7,6 +8,9 @@ import torch
 
 def main():
 
+    print("Starting multi-turn experiment")
+    print("=" * 20)
+    start = time.time()
     MAX_TURNS = 10
     # Load dataset
     lmsys = load_dataset("lmsys/lmsys-chat-1m", split="train")
@@ -14,7 +18,7 @@ def main():
 
     # Filter dataset 
     valid_indices = [i for i in range(len(turns)) if turns[i] == MAX_TURNS]
-    conversations = lmsys[valid_indices[:100]]  # For testing, limit to 100 conversations
+    conversations = lmsys[valid_indices[:1000]]  # For testing, limit to 1000 conversations
     num_conversations = len(conversations["conversation"])
 
     # Load model and tokenizer
@@ -77,7 +81,11 @@ def main():
             
             conv_results[f'logprob_turns_{num_turns}'] = cum_logprob
         results.append(conv_results)
+
     # Save results
     output_path = f"results/exp_multi_{MAX_TURNS}_turn_logprobs.json"
     with open(output_path, "w") as f:
         json.dump(results, f, indent=4)
+
+    end = time.time()
+    print(f"Experiment completed in {end - start:.2f} seconds.")
