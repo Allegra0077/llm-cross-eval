@@ -28,17 +28,16 @@ def main():
 
     results = []
 
-    for i, conversation in enumerate(num_conversations):
+    for i in range(num_conversations):
 
         # Skip overly long conversations due to GPU constraints
         if sum([len(message["content"]) for message in conversations["conversation"][i]]) > 100000:
             continue
 
         conv_results = dict()
-        conversation_id = ""
-        conv_results["conversation_id"] = conversation_id
+        conv_results["conversation_id"] = conversations["id"][i]
         # Last answer is always by model which we do not care about
-        conversation = conversation[:-1]
+        conversation = conversations["conversation"][i][:-1]
 
         for j, num_turns in enumerate(range(1, MAX_TURNS + 1)):
             
@@ -89,3 +88,6 @@ def main():
 
     end = time.time()
     print(f"Experiment completed in {end - start:.2f} seconds.")
+
+if __name__ == "__main__":
+    main()
