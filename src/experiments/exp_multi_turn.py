@@ -28,7 +28,7 @@ def main():
     model = AutoModelForCausalLM.from_pretrained("Qwen/Qwen3-8B", device_map="auto")
 
     results = []
-
+    HUMAN_FIRST_TURN = True
     for i in range(num_conversations):
 
         # Skip overly long conversations due to GPU constraints
@@ -36,31 +36,27 @@ def main():
             continue
 
         conv_results = dict()
-        conv_results["conversation_id"] = conversations["id"][i]
+        conv_results["conversation_id"] = conversations["conversation_id"][i]
 
         # Last answer is always by model which we do not care about
         conversation = conversations["conversation"][i][:-1]
 
-        for j, num_turns in enumerate(range(1, MAX_TURNS + 1)):
-            
-            output_ids = tokenizer.apply_chat_template(
-                [conversation_subset[-1]],
-                add_generation_prompt=False,
-                tokenize=True,
-                return_dict=True,
-                return_tensors="pt"
-                )
+        final_human_input = conversation[-1]
+        final_formatted_input = "<|im_start|>user\n" + final_human_input["content"] + "<|im_end|>\n"
 
+        # Don't care about padding, attn_mask since no batch processing
+        output_ids = tokenizer(final_formatted_input, return_tensors="pt")
+
+        for j, num_turns in enumerate(range(1, MAX_TURNS + 1)):
 
             # Use last num_turns turns of conversation as conditioning
-            conversation_subset = conversation[-num_turns * 2:]
             # conversation_subset has structure [M, H] * num_turns
+            conversation_subset = conversation[-num_turns * 2:]
 
-            if HUMAN_FIRST_TURN:
+            if HUMAN_FIRST_TURN and conversation_subset[0]["role"] == "assistant":
                 # Remove the first message by model
-                assert conversation_subset[0]["role"] == "model"
                 conversation_subset = conversation_subset[1:]
-                assert conversation_subset[0]["role"] == "human"
+                assert conversation_subset[0]["role"] == "user"
 
             if len(conversation_subset) > 1:
                 input_ids = tokenizer.apply_chat_template(
@@ -74,8 +70,15 @@ def main():
                 complete_sequence = torch.cat((input_ids["input_ids"], output_ids["input_ids"]), dim = -1).to(device)
 
             else:
-                
-                complete_sequence = output_ids["input_ids"].to(device)
+                system_instruction = {'content': 'You are a helpful assistant.', 'role': 'system'}
+                input_ids = tokenizer.apply_chat_template(
+                    [system_instruction],
+                    add_generation_prompt=False,
+                    tokenize=True,
+                    return_dict=True,
+                    return_tensors="pt"
+                )
+            complete_sequence = torch.cat((input_ids["input_ids"], output_ids["input_ids"]), dim = -1).to(device)
 
             # Get model logits
             with torch.no_grad():
@@ -97,7 +100,7 @@ def main():
             
             conv_results[f'logprob_turns_{num_turns}'] = cum_logprob
         results.append(conv_results)
-
+        
     # Save results
     output_path = f"results/exp_multi_{MAX_TURNS}_turn_logprobs.json"
     with open(output_path, "w") as f:
