@@ -12,6 +12,7 @@ def main():
     print("=" * 20)
     start = time.time()
     MAX_TURNS = 10
+    HUMAN_FIRST_TURN = True
     # Load dataset
     lmsys = load_dataset("lmsys/lmsys-chat-1m", split="train")
     turns = list(lmsys["turn"])
@@ -36,30 +37,46 @@ def main():
 
         conv_results = dict()
         conv_results["conversation_id"] = conversations["id"][i]
+
         # Last answer is always by model which we do not care about
         conversation = conversations["conversation"][i][:-1]
 
         for j, num_turns in enumerate(range(1, MAX_TURNS + 1)):
             
-            conversation_subset = conversation[-num_turns * 2:]
-
-            input_ids = tokenizer.apply_chat_template(
-                conversation_subset[:-1],
+            output_ids = tokenizer.apply_chat_template(
+                [conversation_subset[-1]],
                 add_generation_prompt=False,
                 tokenize=True,
                 return_dict=True,
                 return_tensors="pt"
-            )
+                )
 
-            output_ids = tokenizer.apply_chat_template(
-            [conversation_subset[-1]],
-            add_generation_prompt=False,
-            tokenize=True,
-            return_dict=True,
-            return_tensors="pt"
-            )
 
-            complete_sequence = torch.cat((input_ids["input_ids"], output_ids["input_ids"]), dim = -1).to(device)
+            # Use last num_turns turns of conversation as conditioning
+            conversation_subset = conversation[-num_turns * 2:]
+            # conversation_subset has structure [M, H] * num_turns
+
+            if HUMAN_FIRST_TURN:
+                # Remove the first message by model
+                assert conversation_subset[0]["role"] == "model"
+                conversation_subset = conversation_subset[1:]
+                assert conversation_subset[0]["role"] == "human"
+
+            if len(conversation_subset) > 1:
+                input_ids = tokenizer.apply_chat_template(
+                    conversation_subset[:-1],
+                    add_generation_prompt=False,
+                    tokenize=True,
+                    return_dict=True,
+                    return_tensors="pt"
+                )
+
+                complete_sequence = torch.cat((input_ids["input_ids"], output_ids["input_ids"]), dim = -1).to(device)
+
+            else:
+                
+                complete_sequence = output_ids["input_ids"].to(device)
+
             # Get model logits
             with torch.no_grad():
                 logits = model(complete_sequence).logits
