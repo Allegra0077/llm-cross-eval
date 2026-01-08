@@ -3,6 +3,7 @@ from __future__ import annotations
 import csv
 import time
 import re
+import argparse
 from pathlib import Path
 
 import torch
@@ -13,6 +14,14 @@ from .logprob_utils import score_full_text_next_tokens
 
 DATA_PATH = Path("data/canonical.txt")
 OUT_DIR = Path("results")
+
+def argparse()::
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--model a", required=True)
+    ap.add_argument("--model b", required=True)
+    ap.add_argument("--device", default="cuda", choices=["cuda", "cpu"])
+    ap.add_argument("--dtype", default="bfloat16", choices=["bfloat16", "float16", "float32"])
+    return ap.parse_args()
 
 def clean_pdf_text(text: str) -> str:
     """
@@ -36,9 +45,15 @@ def main():
     raw_text = DATA_PATH.read_text(encoding="utf-8")
     text = clean_pdf_text(raw_text)
 
-    device = "cpu"
+    args = argparse()
+    device = args.device
 
-    tokenizer, model_a, model_b = load_two_models_same_family(device=device)
+    tokenizer, model_a, model_b = load_two_models_same_family(
+        model_name_1=args.model_a,
+        model_name_2=args.model_b,
+        device=device,
+        dtype=args.dtype,
+    )
     print("Loaded models:")
     print("  A:", model_a.name_or_path)
     print("  B:", model_b.name_or_path)

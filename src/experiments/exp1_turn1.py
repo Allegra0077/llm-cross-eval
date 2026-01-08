@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 import time
+import argparse
 from pathlib import Path
 
 import torch
@@ -19,13 +20,29 @@ PROMPTS = [
 
 OUT_DIR = Path("results")
 
+def parse_args():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--model a", required=True, help="Generator / Model A")
+    ap.add_argument("--model b", required=True, help="Comparison / Model B")
+    ap.add_argument("--device", default="cuda", choices=["cuda", "cpu"])
+    ap.add_argument("--dtype", default="bfloat16", choices=["bfloat16", "float16", "float32"])
+    ap.add_argument("--max_new_tokens", type=int, default=60)
+    ap.add_argument("--temperature", type=float, default=0.7)
+    ap.add_argument("--top_p", type=float, default=0.9)
+    return ap.parse_args()
 
 def main():
     OUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    device = "cpu"
+    args = parse_args()
+    device = args.device
 
-    tokenizer, model_a, model_b = load_two_models_same_family(device=device)
+    tokenizer, model_a, model_b = load_two_models_same_family(
+        model_name_1=args.model_a,
+        model_name_2=args.model_b,
+        device=device,
+        dtype=args.dtype,
+    )
     print("Loaded models:")
     print("  A:", model_a.name_or_path)
     print("  B:", model_b.name_or_path)
@@ -67,10 +84,10 @@ def main():
             gen = model_a.generate(
                 input_ids,
                 attention_mask=attention_mask,
-                max_new_tokens=60,
+                max_new_tokens=args.max_new_tokens,
                 do_sample=True,
-                temperature=0.7,
-                top_p=0.9,
+                temperature=args.temperature,
+                top_p=args.top_p,
                 pad_token_id=tokenizer.eos_token_id,
                 repetition_penalty=1.1 # prompt0 repeated same sentence over and over without this
             )
