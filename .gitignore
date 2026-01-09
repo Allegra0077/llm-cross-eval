@@ -16,3 +16,9 @@ data/*
 
 .vscode/
 .idea/
+
+# experiment outputs
+results/
+*.csv
+*.json
+*.jsonl
