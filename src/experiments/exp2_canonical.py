@@ -15,12 +15,15 @@ from .logprob_utils import score_full_text_next_tokens
 DATA_PATH = Path("data/canonical.txt")
 OUT_DIR = Path("results")
 
-def argparse()::
+def argparse():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--model a", required=True)
-    ap.add_argument("--model b", required=True)
+    ap.add_argument("--model_a", required=True)
+    ap.add_argument("--model_b", required=True)
     ap.add_argument("--device", default="cuda", choices=["cuda", "cpu"])
     ap.add_argument("--dtype", default="bfloat16", choices=["bfloat16", "float16", "float32"])
+    ap.add_argument("--out_dir",
+    default="/Data/allegra-maria-pia.boustany/llm_cross_eval/results",
+    help="Where to write CSV outputs",) #avoid hitting disk quota, change as needed
     return ap.parse_args()
 
 def clean_pdf_text(text: str) -> str:

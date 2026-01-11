@@ -14,7 +14,7 @@ def load_two_models_same_family(
     Load two language models and their tokenizers.
 
     """
-    toarch_dtype = {
+    torch_dtype = {
         "bfloat16": torch.bfloat16,
         "float16": torch.float16,
         "float32": torch.float32,

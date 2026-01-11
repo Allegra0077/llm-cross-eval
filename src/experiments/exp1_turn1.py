@@ -18,24 +18,28 @@ PROMPTS = [
     "A simple explanation of why reinforcement learning is hard is",
 ]
 
-OUT_DIR = Path("results")
 
 def parse_args():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--model a", required=True, help="Generator / Model A")
-    ap.add_argument("--model b", required=True, help="Comparison / Model B")
+    ap.add_argument("--model_a", required=True, help="Generator / Model A")
+    ap.add_argument("--model_b", required=True, help="Comparison / Model B")
     ap.add_argument("--device", default="cuda", choices=["cuda", "cpu"])
     ap.add_argument("--dtype", default="bfloat16", choices=["bfloat16", "float16", "float32"])
     ap.add_argument("--max_new_tokens", type=int, default=60)
     ap.add_argument("--temperature", type=float, default=0.7)
     ap.add_argument("--top_p", type=float, default=0.9)
+    ap.add_argument("--out_dir",
+    default="/Data/allegra-maria-pia.boustany/llm_cross_eval/results",
+    help="Where to write CSV outputs",
+    ) #avoid hitting disk quota, change as needed
     return ap.parse_args()
 
 def main():
-    OUT_DIR.mkdir(parents=True, exist_ok=True)
 
     args = parse_args()
     device = args.device
+    out_dir = Path(args.out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
 
     tokenizer, model_a, model_b = load_two_models_same_family(
         model_name_1=args.model_a,
@@ -51,7 +55,7 @@ def main():
     set_seed(42)
 
     ts = int(time.time())
-    out_csv = OUT_DIR / f"exp1_turn1_{ts}.csv"
+    out_csv = out_dir / f"exp1_turn1_{ts}.csv"
 
     with out_csv.open("w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
