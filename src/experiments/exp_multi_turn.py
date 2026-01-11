@@ -94,7 +94,8 @@ def main():
 
             # Compute logprobs for output tokens
             output_logits = logits[:, -output_ids["input_ids"].shape[1]-1:-1, :]
-            log_probs = torch.nn.functional.log_softmax(output_logits, dim=-1)
+            probs = torch.nn.functional.softmax(output_logits, dim=-1)
+            log_probs = torch.log(probs)
 
             target_tokens = output_ids["input_ids"].to(device)
 
@@ -105,8 +106,12 @@ def main():
                 token_id = target_tokens[0, k].item()
                 logprob = log_probs[0, k, token_id].item()
                 cum_logprob += logprob
+
+            entropy = -torch.sum(probs * torch.log(probs), dim=-1).sum().item()
             
             conv_results[f'logprob_turns_{num_turns}'] = cum_logprob
+            conv_results[f'entropy_turns_{num_turns}'] = entropy
+
         results.append(conv_results)
         
     # Save results
