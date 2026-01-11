@@ -50,15 +50,16 @@ def main():
         # Don't care about padding, attn_mask since no batch processing
         output_ids = tokenizer(final_formatted_input, return_tensors="pt")
 
-        for j, num_turns in enumerate(range(1, MAX_TURNS + 1)):
+        for num_turns in range(1, MAX_TURNS + 1):
 
             # Use last num_turns turns of conversation as conditioning
-            # conversation_subset has structure [M, H] * num_turns
+            # conversation_subset has structure [M, H] * num_turns, at MAX_TURNS it flips to full conversation [H, M] * MAX_TURNS
             conversation_subset = conversation[-num_turns * 2:]
 
             if HUMAN_ONLY:
+                human_message_modulo = 0 if num_turns == MAX_TURNS else 1
                 # Apply_chat_template transforms this to multiple turns with user-specific tokens
-                conversation_subset = [message for i, message in enumerate(conversation_subset) if i % 2 == 1]
+                conversation_subset = [message for i, message in enumerate(conversation_subset) if i % 2 == human_message_modulo]
 
             if HUMAN_FIRST_TURN and conversation_subset[0]["role"] == "assistant":
                 # Remove the first message by model
@@ -109,6 +110,7 @@ def main():
         results.append(conv_results)
         
     # Save results
+    print(f"Recorded {len(results)} results")
     output_path = f"results/exp_multi_HO_{HUMAN_ONLY}_{MAX_TURNS}_turn_logprobs.json"
     with open(output_path, "w") as f:
         json.dump(results, f, indent=4)
