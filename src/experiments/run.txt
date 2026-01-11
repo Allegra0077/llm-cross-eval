@@ -1,0 +1,17 @@
+5 seeds, first 20 prompts
+
+python -m src.experiments.exp1_turn1 \
+  --model_a Qwen/Qwen3-4B-Thinking-2507 \
+  --model_b Qwen/Qwen3-30B-A3B-Thinking-2507 \
+  --device cuda \
+  --dtype bfloat16 \
+  --max_new_tokens 40 \
+  --temperature 0.7 \
+  --top_p 0.9 \
+  --prompts_file src/experiments/prompts_AI_ML_20.txt \
+  --num_prompts 20 \
+  --seeds 1 2 3 4 5
+
+Teacher: Qwen3-30B-A3B-Thinking-2507 
+
+Student: Qwen3-4B-Thinking-2507 
