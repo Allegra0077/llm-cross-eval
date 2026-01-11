@@ -13,6 +13,9 @@ def main():
     start = time.time()
     MAX_TURNS = 10
     HUMAN_FIRST_TURN = True
+    HUMAN_ONLY = True
+    print(f"Setting HUMAN_FIRST_TURN to {HUMAN_FIRST_TURN}")
+    print(f"Setting HUMAN_ONLY to {HUMAN_ONLY}")
     # Load dataset
     lmsys = load_dataset("lmsys/lmsys-chat-1m", split="train")
     turns = list(lmsys["turn"])
@@ -52,6 +55,10 @@ def main():
             # Use last num_turns turns of conversation as conditioning
             # conversation_subset has structure [M, H] * num_turns
             conversation_subset = conversation[-num_turns * 2:]
+
+            if HUMAN_ONLY:
+                # Apply_chat_template transforms this to multiple turns with user-specific tokens
+                conversation_subset = [message for i, message in enumerate(conversation_subset) if i % 2 == 1]
 
             if HUMAN_FIRST_TURN and conversation_subset[0]["role"] == "assistant":
                 # Remove the first message by model
@@ -102,7 +109,7 @@ def main():
         results.append(conv_results)
         
     # Save results
-    output_path = f"results/exp_multi_{MAX_TURNS}_turn_logprobs.json"
+    output_path = f"results/exp_multi_HO_{HUMAN_ONLY}_{MAX_TURNS}_turn_logprobs.json"
     with open(output_path, "w") as f:
         json.dump(results, f, indent=4)
 
