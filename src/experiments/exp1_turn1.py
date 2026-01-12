@@ -32,12 +32,15 @@ def parse_args():
     default="/Data/allegra-maria-pia.boustany/llm_cross_eval/results",
     help="Where to write CSV outputs",
     ) #avoid hitting disk quota, change as needed
-    ap.add_argument("--prompts_file", type=str, default=None,
-                help="Path to a .txt file with one prompt per line")
+    ap.add_argument("--prompts_file", type=str, default=None, help="Path to a .txt file with one prompt per line") # use to override prompts/to test for non reasoning models 
     ap.add_argument("--num_prompts", type=int, default=None,
                 help="If set, only use first N prompts")
     ap.add_argument("--seeds", type=int, nargs="+", default=[42],
                 help="Random seeds for generation (to get multiple samples per prompt)")
+    ap.add_argument("--dataset", type=str, default=None, help='HF dataset name, e.g. "math-ai/aime25"')
+    ap.add_argument("--split", type=str, default="test", help='Dataset split, e.g. "test"')
+    ap.add_argument("--text_field", type=str, default="problem", help="Column to use as prompt text")
+    ap.add_argument("--max_examples", type=int, default=None, help="Limit number of dataset examples")
 
     return ap.parse_args()
 
@@ -48,11 +51,24 @@ def main():
     out_dir = Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    prompts = PROMPTS
+    prompts = PROMPTS  # fallback
+    
     if args.prompts_file is not None:
-        prompts = [line.strip() for line in Path(args.prompts_file).read_text().splitlines() if line.strip()]
+        prompts = [ln.strip() for ln in Path(args.prompts_file).read_text().splitlines() if ln.strip()]
+
+    if args.dataset is not None:
+        from datasets import load_dataset
+        ds = load_dataset(args.dataset, split=args.split)
+        prompts = [x for x in ds[args.text_field]]
+        if args.max_examples is not None:
+            prompts = prompts[:args.max_examples]
+
     if args.num_prompts is not None:
-        prompts = prompts[:args.num_prompts]
+        prompts = prompts[: args.num_prompts]
+
+    #comment out after sanity check
+    print("Num prompts:", len(prompts))
+    print("First prompt preview:", prompts[0][:120])
 
     tokenizer, model_a, model_b = load_two_models_same_family(
         model_name_1=args.model_a,
@@ -81,7 +97,8 @@ def main():
         
         w.writerow([
             "seed",
-            "prompt_id", "prompt",
+            "example_id",
+            "prompt",
             "continuation_text",
             "token_idx", "token_id", "token_str",
             "p_a", "p_b",
@@ -90,7 +107,7 @@ def main():
         for seed in args.seeds:
             set_seed(seed)
 
-            for pid, prompt in enumerate(PROMPTS):
+            for pid, prompt in enumerate(prompts):
                 enc = tokenizer(prompt, return_tensors="pt")
                 input_ids = enc["input_ids"].to(device)
                 attention_mask = enc["attention_mask"].to(device)
@@ -100,9 +117,9 @@ def main():
                     input_ids,
                     attention_mask=attention_mask,
                     max_new_tokens=args.max_new_tokens,
-                    do_sample=True,
-                    temperature=args.temperature,
-                    top_p=args.top_p,
+                    do_sample=False, #for thinking models, we want deterministic output
+                    temperature=None,
+                    top_p=None,
                     pad_token_id=tokenizer.eos_token_id,
                     repetition_penalty=1.1 # prompt0 repeated same sentence over and over without this
                 )
@@ -126,7 +143,8 @@ def main():
                 for s in scores:
                     w.writerow([
                         seed,
-                        pid, prompt,
+                        pid, 
+                        prompt,
                         continuation_text,
                         s.idx, s.token_id, s.token_str,
                         s.p_a, s.p_b,
