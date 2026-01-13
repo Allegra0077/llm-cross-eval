@@ -11,11 +11,24 @@ def main():
     print("Starting multi-turn experiment")
     print("=" * 20)
     start = time.time()
+
     MAX_TURNS = 10
     HUMAN_FIRST_TURN = True
     HUMAN_ONLY = True
+    MODEL_ONLY = False
+    TEST_HUMAN_MESSAGE = True
+    TEST_MODEL_MESSAGE = False
+
+    assert not (HUMAN_ONLY and MODEL_ONLY), "Cannot set both HUMAN_ONLY and MODEL_ONLY to True"
+    assert not (TEST_HUMAN_MESSAGE and TEST_MODEL_MESSAGE), "Cannot set both TEST_HUMAN_MESSAGE and TEST_MODEL_MESSAGE to True"
+    assert not (HUMAN_FIRST_TURN and (TEST_MODEL_MESSAGE or MODEL_ONLY)), "Cannot set HUMAN_FIRST_TURN when TEST_MODEL_MESSAGE or MODEL_ONLY is True"
+
     print(f"Setting HUMAN_FIRST_TURN to {HUMAN_FIRST_TURN}")
     print(f"Setting HUMAN_ONLY to {HUMAN_ONLY}")
+    print(f"Setting MODEL_ONLY to {MODEL_ONLY}")
+    print(f"Setting TEST_HUMAN_MESSAGE to {TEST_HUMAN_MESSAGE}")
+    print(f"Setting TEST_MODEL_MESSAGE to {TEST_MODEL_MESSAGE}")
+
     # Load dataset
     lmsys = load_dataset("lmsys/lmsys-chat-1m", split="train")
     turns = list(lmsys["turn"])
@@ -31,7 +44,6 @@ def main():
     model = AutoModelForCausalLM.from_pretrained("Qwen/Qwen3-8B", device_map="auto")
 
     results = []
-    HUMAN_FIRST_TURN = True
     for i in range(num_conversations):
 
         # Skip overly long conversations due to GPU constraints
@@ -40,15 +52,23 @@ def main():
 
         conv_results = dict()
         conv_results["conversation_id"] = conversations["conversation_id"][i]
+        
+        if TEST_HUMAN_MESSAGE:
+            # Last answer is always by model which we do not care about
+            conversation = conversations["conversation"][i][:-1]
 
-        # Last answer is always by model which we do not care about
-        conversation = conversations["conversation"][i][:-1]
+            final_human_input = conversation[-1]
+            final_formatted_message = "<|im_start|>user\n" + final_human_input["content"] + "<|im_end|>\n"
 
-        final_human_input = conversation[-1]
-        final_formatted_input = "<|im_start|>user\n" + final_human_input["content"] + "<|im_end|>\n"
+        elif TEST_MODEL_MESSAGE:
+            # Need full conversation
+            conversation = conversations["conversation"][i]
+
+            final_model_input = conversation[-1]
+            final_formatted_message = "<|im_start|>assistant\n" + final_model_input["content"] + "<|im_end|>\n"
 
         # Don't care about padding, attn_mask since no batch processing
-        output_ids = tokenizer(final_formatted_input, return_tensors="pt")
+        output_ids = tokenizer(final_formatted_message, return_tensors="pt")
 
         for num_turns in range(1, MAX_TURNS + 1):
 
@@ -56,10 +76,10 @@ def main():
             # conversation_subset has structure [M, H] * num_turns, at MAX_TURNS it flips to full conversation [H, M] * MAX_TURNS
             conversation_subset = conversation[-num_turns * 2:]
 
-            if HUMAN_ONLY:
-                human_message_modulo = 0 if num_turns == MAX_TURNS else 1
-                # Apply_chat_template transforms this to multiple turns with user-specific tokens
-                conversation_subset = [message for i, message in enumerate(conversation_subset) if i % 2 == human_message_modulo]
+            if HUMAN_ONLY or MODEL_ONLY:
+                role = "user" if HUMAN_ONLY else "assistant"
+                # Filter to only human or model messages
+                conversation_subset = [msg for msg in conversation_subset if msg["role"] == role]
 
             if HUMAN_FIRST_TURN and conversation_subset[0]["role"] == "assistant":
                 # Remove the first message by model
@@ -116,7 +136,9 @@ def main():
         
     # Save results
     print(f"Recorded {len(results)} results")
-    output_path = f"results/exp_multi_HO_{HUMAN_ONLY}_{MAX_TURNS}_turn_logprobs.json"
+    input_setting = "HO" if HUMAN_ONLY else "MO" if MODEL_ONLY else "all"
+    output_setting = "TH" if TEST_HUMAN_MESSAGE else "TM"
+    output_path = f"results/exp_multi_{input_setting}_{output_setting}_{MAX_TURNS}_turn.json"
     with open(output_path, "w") as f:
         json.dump(results, f, indent=4)
 
