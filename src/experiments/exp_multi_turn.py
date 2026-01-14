@@ -6,18 +6,11 @@ from datasets import load_dataset
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
 
-def main():
+def main(max_turns):
 
     print("Starting multi-turn experiment")
     print("=" * 20)
     start = time.time()
-
-    MAX_TURNS = 10
-    HUMAN_FIRST_TURN = True
-    HUMAN_ONLY = True
-    MODEL_ONLY = False
-    TEST_HUMAN_MESSAGE = True
-    TEST_MODEL_MESSAGE = False
 
     assert not (HUMAN_ONLY and MODEL_ONLY), "Cannot set both HUMAN_ONLY and MODEL_ONLY to True"
     assert not (TEST_HUMAN_MESSAGE and TEST_MODEL_MESSAGE), "Cannot set both TEST_HUMAN_MESSAGE and TEST_MODEL_MESSAGE to True"
@@ -34,7 +27,7 @@ def main():
     turns = list(lmsys["turn"])
 
     # Filter dataset 
-    valid_indices = [i for i in range(len(turns)) if turns[i] == MAX_TURNS]
+    valid_indices = [i for i in range(len(turns)) if turns[i] == max_turns]
     conversations = lmsys[valid_indices[:1000]]  # For testing, limit to 1000 conversations
     num_conversations = len(conversations["conversation"])
 
@@ -58,19 +51,28 @@ def main():
             conversation = conversations["conversation"][i][:-1]
 
             final_human_input = conversation[-1]
-            final_formatted_message = "<|im_start|>user\n" + final_human_input["content"] + "<|im_end|>\n"
+            if INJECT_RANDOM_TOPIC:
+                content = "That's great to hear! Can you now give me a recipe for cooking a carbonara, true Italian style?"
+            else:
+                content = final_human_input["content"]
+            final_formatted_message = "<|im_start|>user\n" + content + "<|im_end|>\n"
 
         elif TEST_MODEL_MESSAGE:
             # Need full conversation
             conversation = conversations["conversation"][i]
 
             final_model_input = conversation[-1]
-            final_formatted_message = "<|im_start|>assistant\n" + final_model_input["content"] + "<|im_end|>\n"
+            if INJECT_RANDOM_TOPIC:
+                content = "To make authentic Carbonara, first brown 100g of sliced guanciale in a pan until crispy, then set the pan aside. Whisk 3 egg yolks and 1 whole egg with 50g of finely grated Pecorino Romano and plenty of freshly cracked black pepper to form a thick paste. Boil 200g of pasta in salted water until al dente, reserving a small cup of the pasta water before draining. Toss the hot pasta into the pan with the guanciale fat, then—with the heat strictly turned off—pour in the egg mixture and a splash of pasta water. Stir vigorously and continuously until the residual heat creates a glossy, creamy emulsion. Serve immediately with an extra dusting of cheese and pepper."
+            else:
+                content = final_model_input["content"]
+            final_formatted_message = "<|im_start|>assistant\n" + content + "<|im_end|>\n"
 
         # Don't care about padding, attn_mask since no batch processing
         output_ids = tokenizer(final_formatted_message, return_tensors="pt")
 
-        for num_turns in range(1, MAX_TURNS + 1):
+
+        for num_turns in range(1, max_turns + 1):
 
             # Use last num_turns turns of conversation as conditioning
             # conversation_subset has structure [M, H] * num_turns, at MAX_TURNS it flips to full conversation [H, M] * MAX_TURNS
@@ -138,12 +140,21 @@ def main():
     print(f"Recorded {len(results)} results")
     input_setting = "HO" if HUMAN_ONLY else "MO" if MODEL_ONLY else "all"
     output_setting = "TH" if TEST_HUMAN_MESSAGE else "TM"
-    output_path = f"results/exp_multi_{input_setting}_{output_setting}_{MAX_TURNS}_turn.json"
+    inject_message = "RT" if INJECT_RANDOM_TOPIC else ""
+    output_path = f"results/exp_multi_{input_setting}_{output_setting}_{inject_message}_{max_turns}_turn.json"
     with open(output_path, "w") as f:
         json.dump(results, f, indent=4)
 
     end = time.time()
     print(f"Experiment completed in {end - start:.2f} seconds.")
+    print("=" * 20)
 
 if __name__ == "__main__":
-    main()
+    for max_turns in [5, 10, 20]:
+        HUMAN_FIRST_TURN = True
+        HUMAN_ONLY = False
+        MODEL_ONLY = False
+        TEST_HUMAN_MESSAGE = True
+        TEST_MODEL_MESSAGE = False
+        INJECT_RANDOM_TOPIC = False
+        main(max_turns)
