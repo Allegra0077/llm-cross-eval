@@ -41,7 +41,7 @@ def parse_args():
     ap.add_argument("--split", type=str, default="test", help='Dataset split, e.g. "test"')
     ap.add_argument("--text_field", type=str, default="problem", help="Column to use as prompt text")
     ap.add_argument("--max_examples", type=int, default=None, help="Limit number of dataset examples")
-
+    ap.add_argument("--do_sample", action="store_true", help="If set, sample decoding (needed for multiple samples)")
     return ap.parse_args()
 
 def main():
@@ -89,7 +89,7 @@ def main():
 
     out_csv = out_dir / f"exp1_turn1_{safe_a}_vs_{safe_b}_{ts}.csv"
 
-    print("Saving results to:", out_csv)
+    print("Saving results to:", out_csv, flush=True)
 
 
     with out_csv.open("w", newline="", encoding="utf-8") as f:
@@ -117,9 +117,9 @@ def main():
                     input_ids,
                     attention_mask=attention_mask,
                     max_new_tokens=args.max_new_tokens,
-                    do_sample=False, #for thinking models, we want deterministic output
-                    temperature=None,
-                    top_p=None,
+                    do_sample=args.do_sample, 
+                    temperature=args.temperature if args.do_sample else None,
+                    top_p=args.top_p if args.do_sample else None,
                     pad_token_id=tokenizer.eos_token_id,
                     repetition_penalty=1.1 # prompt0 repeated same sentence over and over without this
                 )
@@ -151,7 +151,7 @@ def main():
                         s.ratio_pA_over_pB,
                     ])
 
-    print("\nSaved:", out_csv)
+    print("\nSaved:", out_csv, flush=True)
 
 
 if __name__ == "__main__":

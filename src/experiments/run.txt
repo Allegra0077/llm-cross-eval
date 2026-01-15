@@ -1,6 +1,18 @@
+python -m src.experiments.exp1_non_reasoning \
+  --model_a Qwen/Qwen2.5-1.5B-Instruct \
+  --model_b Qwen/Qwen2.5-7B-Instruct \
+  --device cuda \
+  --dtype bfloat16 \
+  --dataset math-ai/aime25 \
+  --split test \
+  --text_field problem \
+  --max_examples 2 \
+  --max_new_tokens 20 \
+  --seeds 42
+
 5 seeds, first 20 prompts
 
-python -m src.experiments.exp1_turn1 \
+python -m src.experiments.exp1_reasoning \
   --model_a Qwen/Qwen3-4B-Thinking-2507 \
   --model_b Qwen/Qwen3-30B-A3B-Thinking-2507 \
   --device cuda \
@@ -15,3 +27,53 @@ python -m src.experiments.exp1_turn1 \
 Teacher: Qwen3-30B-A3B-Thinking-2507 
 
 Student: Qwen3-4B-Thinking-2507 
+
+A: Student
+B: Teacher
+
+python -m src.experiments.exp1_turn1 \
+  --model_a Qwen/Qwen3-4B-Thinking-2507 \
+  --model_b Qwen/Qwen3-30B-A3B-Thinking-2507 \
+  --device cuda \
+  --dtype bfloat16 \
+  --dataset math-ai/aime25 \
+  --split test \
+  --text_field problem \
+  --max_examples 3 \
+  --max_new_tokens 2000 \
+  --seeds 42
+
+3 samples: 
+
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+
+python -m src.experiments.exp1_turn1 \
+  --model_a Qwen/Qwen3-4B-Thinking-2507 \
+  --model_b Qwen/Qwen3-30B-A3B-Thinking-2507 \
+  --device cuda \
+  --dtype bfloat16 \
+  --dataset math-ai/aime25 \
+  --split test \
+  --text_field problem \
+  --max_examples 2 \
+  --max_new_tokens 2000 \
+  --do_sample \
+  --temperature 0.7 \
+  --top_p 0.9 \
+  --seeds 1 2 3
+
+
+A: Teacher
+B: Student
+
+python -m src.experiments.exp1_turn1 \
+  --model_a Qwen/Qwen3-30B-A3B-Thinking-2507 \
+  --model_b Qwen/Qwen3-4B-Thinking-2507 \
+  --device cuda \
+  --dtype bfloat16 \
+  --dataset math-ai/aime25 \
+  --split test \
+  --text_field problem \
+  --max_examples 2 \
+  --max_new_tokens 2000 \
+  --seeds 42
