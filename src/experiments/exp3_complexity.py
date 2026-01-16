@@ -51,6 +51,7 @@ def parse_args():
                 help="If set, sample from MATH by level and attach bucket/level metadata")
     ap.add_argument("--n_per_level", type=int, default=3,
                 help="How many examples to sample per MATH level (1..5)")
+    ap.add_argument("--n_per_bucket", type=int, default=None, help="If set, sample this many examples per difficulty bucket (easy/medium/hard) from MATH")
     return ap.parse_args()
 
 def parse_level(level_field) -> int:
@@ -71,7 +72,13 @@ def bucket_from_level(level: int) -> str:
         return "hard"
     return "unknown"
 
-def sample_math_prompts(dataset_name: str, split: str, n_per_level: int, seed: int):
+def sample_math_prompts(dataset_name: str, split: str, n_per_level: int, n_per_bucket: int, seed: int):
+    
+    """
+    If n_per_bucket is set, sample balanced buckets: 
+    easy (l1-2), medium (l3-4), hard (l5).
+    Otherwise (default), sample n_per_level from each level 1..5.
+    """
     ds = load_dataset(dataset_name, split=split)
     rng = random.Random(seed)
 
@@ -82,12 +89,21 @@ def sample_math_prompts(dataset_name: str, split: str, n_per_level: int, seed: i
         if lvl in by_level:
             by_level[lvl].append(i)
 
+    if n_per_bucket is not None: 
+        n = n_per_bucket
+        n12 = n//2
+        n34 = n//2
+        per_level = {1: n12, 2: n - n12, 3: n34, 4: n - n34, 5: n} #in case of odd n 
+    else:
+        per_level = {lvl: n_per_level for lvl in [1, 2, 3, 4, 5]}
+
     samples = []
     for lvl in [1, 2, 3, 4, 5]:
+        need = per_level[lvl]
         idxs = by_level[lvl]
-        if len(idxs) < n_per_level:
-            raise ValueError(f"Not enough items for level {lvl}: have {len(idxs)}, need {n_per_level}")
-        chosen = rng.sample(idxs, n_per_level)
+        if len(idxs) < need:
+            raise ValueError(f"Not enough items for level {lvl}: have {len(idxs)}, need {need}")
+        chosen = rng.sample(idxs, need)
         for j in chosen:
             ex = ds[j]
             samples.append({
@@ -127,7 +143,8 @@ def main():
             sampled = sample_math_prompts(
                 dataset_name=args.dataset,
                 split=args.split,
-                n_per_level=args.n_per_level,
+                n_per_level=args.n_per_level if args.n_per_bucket is None else 0,
+                n_per_bucket=args.n_per_bucket,
                 seed=args.seeds[0],  # deterministic sample given first seed
             )
             examples = [{"id": ex["id"], "prompt": ex["problem"], "level": ex["level"], "bucket": ex["bucket"]} for ex in sampled]
