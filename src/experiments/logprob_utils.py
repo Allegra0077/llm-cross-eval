@@ -69,52 +69,38 @@ def score_continuation_tokens(
     prompt: str,
     continuation: str,
     device: str,
-) -> List[TokenScore]:
-    """
-    Experiment 1 helper:
-    Score each token of 'continuation' given 'prompt' under both models.
-    Returns per-token scores aligned to the continuation tokens.
-    """
-    # Encode full prompt+continuation
-    enc_full = tokenizer(prompt + continuation, return_tensors="pt")
-    input_ids_full = enc_full["input_ids"].to(device)  # (1, L)
+): 
+    # tokenize separately, no special tokens
+    enc_p = tokenizer(prompt, return_tensors="pt", add_special_tokens=False)
+    enc_c = tokenizer(continuation, return_tensors="pt", add_special_tokens=False)
 
-    # Encode prompt only to get prompt length in tokens
-    enc_prompt = tokenizer(prompt, return_tensors="pt")
-    prompt_len = enc_prompt["input_ids"].shape[1]
+    ids_p = enc_p["input_ids"].to(device)  # (1, Lp)
+    ids_c = enc_c["input_ids"].to(device)  # (1, Lc)
 
-    # Next-token log-prob matrices
-    lp_a = _logprobs_next_token_matrix(model_a, input_ids_full)  # (L-1, V)
-    lp_b = _logprobs_next_token_matrix(model_b, input_ids_full)  # (L-1, V)
+    # concatenate
+    input_ids_full = torch.cat([ids_p, ids_c], dim=1)  # (1, Lp+Lc)
+    prompt_len = ids_p.shape[1]
+    cont_token_ids = input_ids_full[0, prompt_len:]
 
-    # Continuation token ids start at prompt_len
-    cont_token_ids = input_ids_full[0, prompt_len:]  # (n,)
+    lp_a = _logprobs_next_token_matrix(model_a, input_ids_full)
+    lp_b = _logprobs_next_token_matrix(model_b, input_ids_full)
 
-    scores: List[TokenScore] = []
+    scores = []
     for i, tok_id_tensor in enumerate(cont_token_ids):
         tok_id = int(tok_id_tensor.item())
-
-        # token at absolute position (prompt_len + i) is predicted from row (prompt_len + i - 1)
-        pred_row = prompt_len + i - 1
+        pred_row = prompt_len + i - 1  # predicts token at pos prompt_len+i
         logp_a_tok = float(lp_a[pred_row, tok_id].item())
         logp_b_tok = float(lp_b[pred_row, tok_id].item())
 
-        # Convert to probs (see if useful to have both)
-        p_a_tok = math.exp(logp_a_tok)
-        p_b_tok = math.exp(logp_b_tok)
-
-        scores.append(
-            TokenScore(
-                idx=i,
-                token_id=tok_id,
-                token_str=_tok_str(tokenizer, tok_id),
-                logp_a=logp_a_tok,
-                logp_b=logp_b_tok,
-                p_a=p_a_tok,
-                p_b=p_b_tok,
-            )
-        )
-
+        scores.append(TokenScore(
+            idx=i,
+            token_id=tok_id,
+            token_str=_tok_str(tokenizer, tok_id),
+            logp_a=logp_a_tok,
+            logp_b=logp_b_tok,
+            p_a=math.exp(logp_a_tok),
+            p_b=math.exp(logp_b_tok),
+        ))
     return scores
 
 #experiment 2 scoring
