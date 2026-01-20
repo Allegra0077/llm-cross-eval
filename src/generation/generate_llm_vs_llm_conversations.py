@@ -146,9 +146,9 @@ def generate_reply(
         attention_mask = enc.get("attention_mask", None)
         if attention_mask is not None:
             attention_mask = attention_mask.to(model.device) # ensure on correct device, had runtime error once
-        else:
-            input_ids = enc.to(model.device)
-            attention_mask = None
+    else:
+        input_ids = enc.to(model.device)
+        attention_mask = None
 
     with torch.no_grad():
         out = model.generate(
