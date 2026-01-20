@@ -62,29 +62,18 @@ GENERATION_GUIDE = ("The user is discussing a topic with the assistant."
 
 #USER_NEUTRAL_PROMPT = "You are a normal user interacting naturally with an assisant." --> prompt was not strong enough, user acted as an assistant...
 USER_NEUTRAL_PROMPT = (
-    "You are a HUMAN USER interacting with an AI assistant.\n"
-    "You MUST behave like a real user, NOT like an assistant or writer.\n\n"
-    "You are a HUMAN USER. You do NOT write the content.\n"
-    "You only give feedback on the assistant’s answer.\n\n"
-    "Hard rules:\n"
-    "- Do NOT continue the assistant’s text\n"
-    "- Do NOT add new tips, steps, or paragraphs\n"             
-    "- Do NOT rewrite sections yourself\n"
-    "- ONLY: comment, critique, ask for changes, ask questions (1–2 sentences)\n\n"
-    
-    "Rules:\n"
-    "- NEVER explain how to solve the task\n"
-    "- NEVER restate the task\n"
-    "- NEVER write the final answer yourself\n\n"
-    "What you SHOULD do:\n"
-    "- React to what the assistant just said\n"
-    "- Ask for clarifications, edits, or changes\n"
-    "- Express opinions (like/dislike)\n"
-    "- Ask follow-up questions\n"
-    "- Push back or disagree if needed\n\n"
-    "Your replies should be SHORT and conversational (1–3 sentences).\n"
-    "You are not helpful. You are being helped.\n"
-    "Every message you send must contain either a question or a request for a change."
+    "Respond as a user reacting naturally to the assistant’s last message.\n\n"
+    "Your response should be short (1–2 sentences) and conversational.\n"
+    "You may:\n"
+    "- ask for clarification\n"
+    "- request a change or refinement\n"
+    "- express agreement or disagreement\n"
+    "- ask a follow-up question\n\n"
+    "Do NOT:\n"
+    "- continue the assistant’s answer\n"
+    "- add new content or solutions\n"
+    "- restate the original task\n\n"
+    "Write only the user’s next message."
 )
 
 #FIXME: maybe construct a better dataset of personas that are classified by type (ex: "common" personas vs "complex" personas...)
@@ -145,10 +134,26 @@ def generate_reply(
         temperature: float = 0.7
 ) -> str:
     """ Generate one reply given a chat history. """
-    input_ids = tokenizer.apply_chat_template(messages, tokenize=True, add_generation_prompt=True, return_tensors="pt").to(DEVICE)
+    enc = tokenizer.apply_chat_template(
+        messages,
+        tokenize=True,
+        add_generation_prompt=True,
+        return_tensors="pt"
+    )
+    # some tokenizers return a dict, some return a tensor directly
+    if isinstance(enc, dict):
+        input_ids = enc["input_ids"].to(model.device)
+        attention_mask = enc.get("attention_mask", None)
+        if attention_mask is not None:
+            attention_mask = attention_mask.to(model.device) # ensure on correct device, had runtime error once
+        else:
+            input_ids = enc.to(model.device)
+            attention_mask = None
+
     with torch.no_grad():
         out = model.generate(
-            input_ids,
+            input_ids=input_ids,
+            attention_mask=attention_mask,
             max_new_tokens=max_new_tokens,
             temperature=temperature,
             do_sample=True,
@@ -162,7 +167,7 @@ def safe_generate(model, tokenizer, messages, max_new_tokens=150, temperature=0.
         clean = strip_reasoning(raw)
         if clean:
             return clean
-        return "[EMPTY]"
+    return "[EMPTY]"
     
 def load_model(name):
     tokenizer = AutoTokenizer.from_pretrained(name)
