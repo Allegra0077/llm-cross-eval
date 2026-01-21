@@ -25,7 +25,7 @@ python src/generation/generate_llm_vs_llm_conversations.py \
 Score
 
 python -m src.scoring.score_llm_vs_llm \
-  --input_path src/data/conversations/llm_vs_llm_conversations_20260119_174806.jsonl \
+  --input_path src/data/conversations/llm_vs_llm_conversations_20260120_122213.jsonl \
   --assistant_model Qwen/Qwen3-4B-Instruct-2507 \
   --n_turns_list 0 1 2 3 4 6
 

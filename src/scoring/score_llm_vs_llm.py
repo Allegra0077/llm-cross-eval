@@ -23,7 +23,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     
     parser.add_argument("--input_path", type=str, required=True, help="JSONL conversations file")
-    parser.add_argument("--output_path", type=str, default=f"src/scores/output_scores_{timestamp}.jsonl", help="JSONL output scores file")
+    parser.add_argument("--output_path", type=str, default=f"src/data/scores/output_scores_{timestamp}.jsonl", help="JSONL output scores file")
     parser.add_argument("--assistant_model", type=str, required=True, help="Model used for scoring")
 
     # truncation strategy: keep last n turns before target
