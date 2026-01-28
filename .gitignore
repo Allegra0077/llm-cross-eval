@@ -16,3 +16,12 @@ data/*
 
 .vscode/
 .idea/
+
+environment.yml
+
+utils/
+.env
+todo.txt
+cluster_run.sh
+plots/
+results/
