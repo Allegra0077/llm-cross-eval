@@ -37,7 +37,7 @@ python src/generation/generate_llm_vs_llm_conversations.py \
 Score
 
 python -m src.scoring.score_llm_vs_llm \
-  --input_path src/data/conversations/llm_vs_llm_conversations_20260127_202917.jsonl \
+  --input_path src/data/conversations/llm_vs_llm_conversations_20260127_212002.jsonl \
   --assistant_model Qwen/Qwen3-4B-Instruct-2507 \
   --n_turns_list 0 1 2 3 4 6
 
@@ -48,3 +48,25 @@ tmux new -s <session_name>
 
 tmux ls 
 tmux attach -t <session_name>
+
+
+likelihood ratio run
+
+python src/scoring/lr_score_llm_vs_llm \
+  --input_path src/data/conversations/llm_vs_llm_conversations_20260127_212002.jsonl \
+  --assistant_model Qwen/Qwen3-4B-Instruct-2507 \
+  --user_model Qwen/Qwen3-4B-Instruct-2507
+
+
+categorical personas generate conversations
+
+python src/generation/generate_with_cat_persona.py \
+  --experiments_path src/data/personas/personas.jsonl \
+  --user_model Qwen/Qwen3-4B-Instruct-2507 \
+  --assistant_model Qwen/Qwen3-4B-Instruct-2507 \
+  --num_conversations 42 \
+  --num_turns 8 \
+  --shuffle \
+  --seed 0
+
+

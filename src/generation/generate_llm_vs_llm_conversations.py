@@ -56,14 +56,14 @@ def parse_args():
 # Prompts
 #----------------------
 
-SYSTEM_PROMPT = "You are a helpful assistant."
+ASSISTANT_SYSTEM_PROMPT = "You are a helpful assistant."
 
 GENERATION_GUIDE = (
     "The user is discussing a topic with the assistant."
     "The conversation should feel natural and coherent."
 )
 
-USER_NEUTRAL_PROMPT = (
+USER_SYSTEM_PROMPT = (
     "Respond as a user reacting naturally to the assistant’s last message.\n\n"
     "Your response should be short (1–2 sentences) and conversational.\n"
     "You may:\n"
@@ -203,7 +203,7 @@ def generate_conversation(
     # we rebuild user_messages each loop iteration (persona reminder every turn).
     if condition == "hidden_persona" and persona_text is not None:
           user_context_prompt = (
-        f"{USER_NEUTRAL_PROMPT}\n\n"
+        f"{USER_SYSTEM_PROMPT}\n\n"
         "=== INTERNAL CHARACTER NOTES (DO NOT MENTION THESE) ===\n"
         f"{persona_text}\n\n"
         "CRITICAL INSTRUCTIONS:\n"
@@ -214,10 +214,10 @@ def generate_conversation(
         "- Stay focused on reacting to what the ASSISTANT just said\n"
         )
     else:
-        user_context_prompt = USER_NEUTRAL_PROMPT
+        user_context_prompt = USER_SYSTEM_PROMPT
 
     # FIRST assistant reply to seed prompt
-    assistant_messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+    assistant_messages = [{"role": "system", "content": ASSISTANT_SYSTEM_PROMPT}]
     assistant_messages.extend(messages)
     assistant_reply = generate_reply(assistant_model, assistant_tokenizer, assistant_messages)
     messages.append({"role": "assistant", "content": assistant_reply})
@@ -239,7 +239,7 @@ def generate_conversation(
         messages.append({"role": "user", "content": user_reply})
 
         # Assistant turn (assistant sees only visible transcript)
-        assistant_messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+        assistant_messages = [{"role": "system", "content": ASSISTANT_SYSTEM_PROMPT}]
         assistant_messages.extend(messages)
 
         assistant_reply = generate_reply(assistant_model, assistant_tokenizer, assistant_messages)

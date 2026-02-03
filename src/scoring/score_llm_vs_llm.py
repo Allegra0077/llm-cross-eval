@@ -1,8 +1,3 @@
-# TODO:
-# implement 2 scoring modes: 
-# 1. full prefix (baseline)
-# 2. truncated over turns 
-
 import argparse
 import json
 import os
@@ -30,7 +25,7 @@ def parse_args():
     # n_turns=0 means no transcript, only system prompt 
     parser.add_argument("--n_turns_list", type=int, nargs="+", default=[0, 1, 2, 3, 4, 6])
 
-    # FIXME: currently always prepends system prompt 
+    # currently always prepends system prompt 
     parser.add_argument("--prepend_system", type=bool, default=True, help="Prepend a system message before scoring (default: True)")
 
     parser.add_argument("--max_conversations", type=int, default=None)
