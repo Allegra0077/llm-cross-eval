@@ -199,7 +199,7 @@ def main():
                     row = {
                         "conversation_id": conv.get("conversation_id"),
                         "condition": conv.get("condition"),
-                        "persona_id": conv.get("persona_id"),
+                        "persona_text": conv.get("persona_text"),
                         "seed_prompt": conv.get("seed_prompt"),
 
                         "target_user_msg_idx": ui,

@@ -5,7 +5,7 @@ python src/generation/generate_llm_vs_llm_conversations.py \
   --seed_split train_sft \
   --seed_column prompt \
   --condition both \
-  --num_conversations 1 \
+  --num_conversations 2 \
   --num_turns 2 \
   --seed_shuffle
 
@@ -22,10 +22,22 @@ python src/generation/generate_llm_vs_llm_conversations.py \
   --num_turns 6 \
   --seed_shuffle
 
+
+python src/generation/generate_llm_vs_llm_conversations.py \
+  --user_model Qwen/Qwen3-4B-Instruct-2507 \
+  --assistant_model Qwen/Qwen3-4B-Instruct-2507 \
+  --seed_dataset HuggingFaceH4/ultrachat_200k \
+  --seed_split train_sft \
+  --seed_column prompt \
+  --condition both \
+  --num_conversations 250 \
+  --num_turns 6 \
+  --seed_shuffle
+
 Score
 
 python -m src.scoring.score_llm_vs_llm \
-  --input_path src/data/conversations/llm_vs_llm_conversations_20260120_122213.jsonl \
+  --input_path src/data/conversations/llm_vs_llm_conversations_20260127_202917.jsonl \
   --assistant_model Qwen/Qwen3-4B-Instruct-2507 \
   --n_turns_list 0 1 2 3 4 6
 

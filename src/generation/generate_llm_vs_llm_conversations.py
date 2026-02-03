@@ -1,13 +1,14 @@
 from email.policy import default
 from encodings.punycode import T
-import json 
+import json
 from pyexpat.errors import messages
 import os
 import random
-from datasets import load_dataset   
+import re
+from datasets import load_dataset
 import uuid
 import argparse
-from typing import List, Dict
+from typing import List, Dict, Optional
 from datetime import datetime
 
 import torch
@@ -18,14 +19,14 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 #----------------------
 
 # FIXME: for current outputs, used "Qwen/Qwen-4B-Instruct-2507" for both models, thinking models were hallucinating/ user model acting as assistant too...
-USER_MODEL_NAME = "Qwen/Qwen3-8B" #reasoning llm, can switch between thinking and non-thinking mode
+USER_MODEL_NAME = "Qwen/Qwen3-8B"  # reasoning llm, can switch between thinking and non-thinking mode
 ASSISTANT_MODEL_NAME = "Qwen/Qwen3-8B"
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
-# FIXME: 
-#sometimes, I see "<think>" appear in output when using thinking models --> might be source of pollution if dataset and a reason for "user" model to act as assistant too? 
-# check if a "no_think" setting exists ? 
+# FIXME:
+# sometimes, I see "<think>" appear in output when using thinking models --> might be source of pollution if dataset and a reason for "user" model to act as assistant too?
+# check if a "no_think" setting exists ?
 
 def parse_args():
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -35,10 +36,10 @@ def parse_args():
     parser.add_argument("--user_model", type=str, default=USER_MODEL_NAME, required=True, help="User model name",)
     parser.add_argument("--assistant_model", type=str, default=ASSISTANT_MODEL_NAME, required=True, help="Assistant model name",)
     parser.add_argument("--condition", type=str, choices=["no_persona", "hidden_persona", "both"], default="both", help="Which user condition to generate",)
-    parser.add_argument("--num_conversations", type=int, default=20, help="Number of conversations to generate per condition",) #PER CONIDITION!!! so if N = 6, then total of 12 convs (ie 6 w persona, 6 w/o)
+    parser.add_argument("--num_conversations", type=int, default=20, help="Number of conversations to generate per condition",)  # PER CONDITION!!!
     parser.add_argument("--num_turns", type=int, default=6, help="Number of turns per conversation",)
-    
-    # prompt-only dataset seed config 
+
+    # prompt-only dataset seed config
     parser.add_argument("--seed_dataset", type=str, required=True, help="HF dataset name containing user prompts only (single-turn)",)
     parser.add_argument("--seed_split", type=str, default="train")
     parser.add_argument("--seed_column", type=str, required=True, help="Column name containing the prompt text (ex: prompt, instruction, question...)",)
@@ -47,7 +48,7 @@ def parse_args():
     parser.add_argument("--seed_limit", type=int, default=5000, help="How many prompts to load then sample from (for speed)",)
     parser.add_argument("--seed_shuffle", action="store_true")
     parser.add_argument("--seed_seed", type=int, default=0)
-    
+
     parser.add_argument("--output_path", type=str, default=f"src/data/conversations/llm_vs_llm_conversations_{timestamp}.jsonl", help="Path to save generated conversations",)
     return parser.parse_args()
 
@@ -57,10 +58,11 @@ def parse_args():
 
 SYSTEM_PROMPT = "You are a helpful assistant."
 
-GENERATION_GUIDE = ("The user is discussing a topic with the assistant."
-               "The conversation should feel natural and coherent.")
+GENERATION_GUIDE = (
+    "The user is discussing a topic with the assistant."
+    "The conversation should feel natural and coherent."
+)
 
-#USER_NEUTRAL_PROMPT = "You are a normal user interacting naturally with an assisant." --> prompt was not strong enough, user acted as an assistant...
 USER_NEUTRAL_PROMPT = (
     "Respond as a user reacting naturally to the assistant’s last message.\n\n"
     "Your response should be short (1–2 sentences) and conversational.\n"
@@ -75,14 +77,6 @@ USER_NEUTRAL_PROMPT = (
     "- restate the original task\n\n"
     "Write only the user’s next message."
 )
-
-#FIXME: maybe construct a better dataset of personas that are classified by type (ex: "common" personas vs "complex" personas...)
-USER_PERSONA_PROMPTS = {
-    "p01": "You are a very concise, efficiency-focused user.",
-    "p02": "You are a very talkative and friendly user.",
-    "p03": "You are a skeptical user who often asks questions to the assistant.",
-    "p04": "You are a humorous user who likes to make jokes."
-}
 
 #----------------------
 # Utilities
@@ -102,7 +96,7 @@ def load_seed_prompts(args) -> List[str]:
         text = text.strip()
         if not text:
             continue
-        
+
         # filter by length
         w = text.split()
         if len(w) < args.seed_min_words or len(w) > args.seed_max_words:
@@ -121,9 +115,18 @@ def load_seed_prompts(args) -> List[str]:
 
     return prompts
 
+def load_persona_dataset() -> List[str]:
+    """Loads Persona-Chat and returns a list of joined persona strings."""
+    print("Loading Persona-Chat dataset...")
+    # used the PersonaChat dataset by Zhang et al. (2018)
+    ds = load_dataset("AlekseyKorshuk/persona-chat", split="train")
+    return [" ".join(item["personality"]) for item in ds]
+
 def strip_reasoning(text: str) -> str:
-    if "</think>" in text:
-        text = text.split("</think>", 1)[1]
+    text = re.sub(r'<think>.*?</think>', '', text, flags=re.DOTALL)
+    # Also remove if <think> appears without closing tag
+    if '<think>' in text:
+        text = text.split('<think>')[0]
     return text.strip()
 
 def generate_reply(
@@ -145,7 +148,7 @@ def generate_reply(
         input_ids = enc["input_ids"].to(model.device)
         attention_mask = enc.get("attention_mask", None)
         if attention_mask is not None:
-            attention_mask = attention_mask.to(model.device) # ensure on correct device, had runtime error once
+            attention_mask = attention_mask.to(model.device)  # ensure on correct device, had runtime error once
     else:
         input_ids = enc.to(model.device)
         attention_mask = None
@@ -159,67 +162,93 @@ def generate_reply(
             do_sample=True,
         )
     decoded = tokenizer.decode(out[0][input_ids.shape[1]:], skip_special_tokens=True)
-    return decoded.strip() 
+    return strip_reasoning(decoded)
 
-def safe_generate(model, tokenizer, messages, max_new_tokens=150, temperature=0.7, retries=2):
+
+"""
+def generate_reply(model, tokenizer, messages, max_new_tokens=150, temperature=0.7, retries=2):
     for attempt in range(retries):
         raw = generate_reply(model, tokenizer, messages, max_new_tokens, temperature)
         clean = strip_reasoning(raw)
         if clean:
             return clean
     return "[EMPTY]"
-    
+"""
+
 def load_model(name):
     tokenizer = AutoTokenizer.from_pretrained(name)
-    model = AutoModelForCausalLM.from_pretrained(name, torch_dtype=torch.float16, device_map="auto",)
+    model = AutoModelForCausalLM.from_pretrained(
+        name,
+        torch_dtype=torch.float16,
+        device_map="auto",
+    )
     return model, tokenizer
 
 def generate_conversation(
         user_model,
-        user_tokenizer, 
-        assistant_model,    
+        user_tokenizer,
+        assistant_model,
         assistant_tokenizer,
-        condition: str, 
-        persona_id: str | None, 
-        seed_prompt: str, 
+        condition: str,
+        persona_text: Optional[str],
+        seed_prompt: str,
 ) -> Dict:
-    
+
     # visible transcript (saved in final output)
     messages = [
         {"role": "user", "content": seed_prompt},
     ]
 
-    if condition == "hidden_persona":
-        persona_prompt = USER_PERSONA_PROMPTS[persona_id]
-        user_context_prompt = USER_NEUTRAL_PROMPT + " " + persona_prompt
-    else: 
+    # Build the user system prompt ONCE, but it will be SENT every turn because
+    # we rebuild user_messages each loop iteration (persona reminder every turn).
+    if condition == "hidden_persona" and persona_text is not None:
+          user_context_prompt = (
+        f"{USER_NEUTRAL_PROMPT}\n\n"
+        "=== INTERNAL CHARACTER NOTES (DO NOT MENTION THESE) ===\n"
+        f"{persona_text}\n\n"
+        "CRITICAL INSTRUCTIONS:\n"
+        "- These are background facts about you as a person\n"
+        "- They should SUBTLY influence your tone, interests, and reactions\n"
+        "- DO NOT explicitly reference these facts unless the assistant directly asks about them\n"
+        "- NEVER say things like 'my girlfriend' or 'I make 50k' unprompted\n"
+        "- Stay focused on reacting to what the ASSISTANT just said\n"
+        )
+    else:
         user_context_prompt = USER_NEUTRAL_PROMPT
 
     # FIRST assistant reply to seed prompt
     assistant_messages = [{"role": "system", "content": SYSTEM_PROMPT}]
     assistant_messages.extend(messages)
-    assistant_reply = safe_generate(assistant_model, assistant_tokenizer, assistant_messages)
+    assistant_reply = generate_reply(assistant_model, assistant_tokenizer, assistant_messages)
     messages.append({"role": "assistant", "content": assistant_reply})
 
     for _ in range(NUM_TURNS - 1):
-        # User turn (reacts to assistant)
-        user_messages = [{"role": "system", "content": user_context_prompt}]
-        user_messages.extend(messages)
+        # User turn - only sees system prompt (with persona if applicable) + last assistant message
+        user_messages = [
+            {"role": "system", "content": user_context_prompt},
+            {"role": "assistant", "content": messages[-1]["content"]},  # FIXED
+        ]
 
-        user_reply = safe_generate(user_model, user_tokenizer, user_messages, max_new_tokens=60, temperature=0.8) #FIXME: wanted shorter replies for user, since user model was generating very long answers --> but here I'm essentially "cutting" the answers, not prompting the model to be concise.. 
+        user_reply = generate_reply(
+            user_model,
+            user_tokenizer,
+            user_messages,
+            max_new_tokens=60,
+            temperature=0.8
+        )
         messages.append({"role": "user", "content": user_reply})
 
         # Assistant turn (assistant sees only visible transcript)
         assistant_messages = [{"role": "system", "content": SYSTEM_PROMPT}]
         assistant_messages.extend(messages)
-        
-        assistant_reply = safe_generate(assistant_model, assistant_tokenizer, assistant_messages)
-        messages.append({"role": "assistant", "content": assistant_reply})  
+
+        assistant_reply = generate_reply(assistant_model, assistant_tokenizer, assistant_messages)
+        messages.append({"role": "assistant", "content": assistant_reply})
 
     return {
         "conversation_id": str(uuid.uuid4()),
         "condition": condition,
-        "persona_id": persona_id,
+        "persona_text": persona_text,
         "seed_prompt": seed_prompt,
         "messages": messages,
     }
@@ -227,38 +256,42 @@ def generate_conversation(
 def main():
     args = parse_args()
 
+    # ensure reproducible sampling/shuffle/persona choice
+    random.seed(args.seed_seed)
+
     global NUM_TURNS
-    NUM_TURNS = args.num_turns 
+    NUM_TURNS = args.num_turns
 
     user_model, user_tokenizer = load_model(args.user_model)
     assistant_model, assistant_tokenizer = load_model(args.assistant_model)
 
     seeds = load_seed_prompts(args)
-    seeds = seeds[: args.num_conversations] #same seed for both conditions
-    
+    seeds = seeds[: args.num_conversations]  # same seed for both conditions
+
+    personas = load_persona_dataset()
+
     conversations = []
 
     # Generate conversations for both conditions
-    for i, seed_prompt in enumerate(seeds):
+    for seed_prompt in seeds:
 
         if args.condition in ["no_persona", "both"]:
-        
             conv_no_persona = generate_conversation(
-            user_model, user_tokenizer,
-            assistant_model, assistant_tokenizer,
-            condition="no_persona",
-            persona_id=None, 
-            seed_prompt=seed_prompt
+                user_model, user_tokenizer,
+                assistant_model, assistant_tokenizer,
+                condition="no_persona",
+                persona_text=None,
+                seed_prompt=seed_prompt
             )
             conversations.append(conv_no_persona)
-        
+
         if args.condition in ["hidden_persona", "both"]:
-            persona_id = list(USER_PERSONA_PROMPTS.keys())[i % len(USER_PERSONA_PROMPTS)]
+            persona_text = random.choice(personas)
             conv_hidden_persona = generate_conversation(
                 user_model, user_tokenizer,
                 assistant_model, assistant_tokenizer,
                 condition="hidden_persona",
-                persona_id=persona_id, 
+                persona_text=persona_text,
                 seed_prompt=seed_prompt
             )
             conversations.append(conv_hidden_persona)
