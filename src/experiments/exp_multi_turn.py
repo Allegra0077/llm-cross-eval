@@ -14,6 +14,55 @@ load_dotenv()
 DEBUG_MODE = os.getenv("MODE") == "DEBUG"
 INVESTIGATOR_PROMPT = "You are an expert investigator. As you hold a helpful conversation with the user, you should focus on extracting as much detailed information out of them as possible. Your final goal is to predict the user's question as they are asking it."
 
+# seq is Qwen3 Tok of "<think>\n\n</think>\n\n"
+def remove_sequence_list(data, seq=[151667, 271, 151668, 271]):
+    n = len(seq)
+    # Iterate through the list
+    for i in range(len(data) - n + 1):
+        # Check if the slice matches our target sequence
+        if data[i : i + n] == seq:
+            # Return list without the sequence
+            return data[:i] + data[i + n:]
+    return data
+
+def apply_template(conversation, tokenizer, template_type = None, remove_think_tokens = False):
+    # First message is system prompt
+    assert conversation[0]["role"] == "system"
+    assert template_type in [None, "A", "B", "C"], "template_type must be None, 'A' or 'B'"
+
+    if template_type is None:
+        # default chat template
+        inputs = tokenizer.apply_chat_template(
+                        conversation,
+                        add_generation_prompt=False,
+                        tokenize=True,
+                        return_dict=True,
+                        enable_thinking=False
+                )
+    
+    if template_type == "A":
+        formatted_text = f"<|im_start|>system\n{conversation[0]['content']}<|im_end|>\n"
+    elif template_type == "B" or template_type == "C":
+        formatted_text = f"SYSTEM: {conversation[0]['content']}\n"
+
+    for msg in conversation[1:]:
+        if msg["role"] == "user":
+            if template_type == "A" or template_type == "C":
+                formatted_text += f"USER: {msg['content']}\n"
+            if template_type == "B":
+                formatted_text += f"<|im_start|>user\n{msg['content']}<|im_end|>\n"
+        else:
+            if template_type == "A" or template_type == "C":
+                formatted_text += f"ASSISTANT: {msg['content']}\n"
+            if template_type == "B":
+                formatted_text += f"<|im_start|>assistant\n{msg['content']}<|im_end|>\n"
+
+    if template_type != None:
+        inputs = tokenizer(formatted_text) 
+    # Assume BS 1
+    inputs["input_ids"] = torch.tensor([remove_sequence_list(inputs["input_ids"])]) if remove_think_tokens else torch.tensor([inputs["input_ids"]])
+    return inputs
+
 def main(max_turns):
 
     print("Starting multi-turn experiment")
@@ -21,7 +70,6 @@ def main(max_turns):
     start = time.time()
 
     human_first_turn = not MODEL_ONLY # This later enforces turn definition of human always starting a turn, implicitly forces turn 1 for test_model_message to be [H_1, M_1, H_2]
-    test_all = not (HUMAN_ONLY or MODEL_ONLY)
 
     assert not (HUMAN_ONLY and MODEL_ONLY), "Cannot set both HUMAN_ONLY and MODEL_ONLY to True"
     assert not (TEST_HUMAN_MESSAGE and TEST_MODEL_MESSAGE), "Cannot set both TEST_HUMAN_MESSAGE and TEST_MODEL_MESSAGE to True"
@@ -79,6 +127,11 @@ def main(max_turns):
         conv_results["conversation_id"] = conversations["conversation_id"][i]
         conversation = conversations["conversation"][i]
         
+        if LOW_TOKENS:
+            content = "".join([message["content"] for message in conversation])
+            if len(tokenizer(content)["input_ids"]) > 4000:
+                continue
+
         # Model answer is always last element
         test_index = -2 if TEST_HUMAN_MESSAGE else -1
         test_message = conversation[test_index]
@@ -92,6 +145,8 @@ def main(max_turns):
 
             if NATIVE_MODEL:
                 final_formatted_message = "\nUSER: " + content + "\n"
+            elif TEMPLATE_TYPE == "A" or TEMPLATE_TYPE == "C":
+                final_formatted_message = f"USER: {content}\n"
             else:
                 final_formatted_message = "<|im_start|>user\n" + content + "<|im_end|>\n"
 
@@ -105,6 +160,8 @@ def main(max_turns):
 
             if NATIVE_MODEL:
                 final_formatted_message = "ASSISTANT: " + content + "<s>"
+            elif TEMPLATE_TYPE == "C":
+                final_formatted_message = f"ASSISTANT: {content}\n"
             else:
                 final_formatted_message = "<|im_start|>assistant\n" + content + "<|im_end|>\n"
 
@@ -156,8 +213,6 @@ def main(max_turns):
                 # Remove the first message by model
                 conversation_subset = conversation_subset[1:]
                 assert conversation_subset[0]["role"] == "user"
-
-            conversation_subset = [system_instruction] + conversation_subset
             
             if NATIVE_MODEL:
                 # Vicuna doesn't support apply_chat_template...
@@ -172,26 +227,10 @@ def main(max_turns):
                 input_ids = tokenizer(full_message, return_tensors="pt")
 
             else:
-                # TODO: Thinking removal doesn't work with EA setting
-                if len(conversation_subset) > 1:
-                    input_ids = tokenizer.apply_chat_template(
-                        conversation_subset,
-                        add_generation_prompt=False,
-                        tokenize=True,
-                        return_dict=True,
-                        return_tensors="pt",
-                        enable_thinking=False
-                    )
-                else:
-                    # TODO: When is this triggered again? In TEST_MODEL_MESSAGE? Because this does not work with investigator setting -> yes
-                    input_ids = tokenizer.apply_chat_template(
-                        [system_instruction],
-                        add_generation_prompt=False,
-                        tokenize=True,
-                        return_dict=True,
-                        return_tensors="pt",
-                        enable_thinking=False
-                    )
+                conversation_subset = [system_instruction] + conversation_subset
+                # TODO: Thinking removal doesn't work with EA setting, fix this or is this the same for all experiments and so doesnt matter? -> just run for now and check differences after, worst case rerun everything
+                input_ids = apply_template(conversation_subset, tokenizer, TEMPLATE_TYPE)
+
             complete_sequence = torch.cat((input_ids["input_ids"], output_ids["input_ids"]), dim = -1).to(device)
             # For debugging
             if len(debug_conversation) != 3 and num_turns in [0, 1, max_turns - 1]:
@@ -210,15 +249,21 @@ def main(max_turns):
             assert target_tokens.shape[1] == log_probs.shape[1]
 
             cum_logprob = 0.0
+            absolute_rankings = []
             for k in range(target_tokens.shape[1]):
                 token_id = target_tokens[0, k].item()
                 logprob = log_probs[0, k, token_id].item()
                 cum_logprob += logprob
 
+                absolute_rankings.append(log_probs[0, k].argsort(descending=True).tolist().index(token_id)) # 0-based index
+
             entropy = -torch.sum(probs * torch.log(probs), dim=-1).sum().item()
             
             conv_results[f'logprob_turns_{num_turns + 1}'] = cum_logprob
             conv_results[f'entropy_turns_{num_turns + 1}'] = entropy
+            # conv_results[f'absolute_rankings_turns_{num_turns + 1}'] = absolute_rankings
+            conv_results[f'mean_rank_turns_{num_turns + 1}'] = np.mean(absolute_rankings) 
+            conv_results[f'median_rank_turns_{num_turns + 1}'] = np.median(absolute_rankings)
 
         results.append(conv_results)
         
@@ -234,7 +279,9 @@ def main(max_turns):
     native_model_setting = "_NATIVE" if NATIVE_MODEL else ""
     mix_inputs_setting  = "_MIX" if MIX_INPUTS else ""
     empty_assistant_setting = "_EA" if EMPTY_ASSISTANT else ""
-    output_path = f"{output_dir}/exp_multi_{input_setting}_{output_setting}{inject_message}{investigator_setting}{native_model_setting}{mix_inputs_setting}{empty_assistant_setting}_{max_turns}_turn.json"
+    template_setting = f"_T{TEMPLATE_TYPE}" if TEMPLATE_TYPE else ""
+    low_token_setting = "_LT" if LOW_TOKENS else ""
+    output_path = f"{output_dir}/exp_multi_{input_setting}_{output_setting}{inject_message}{investigator_setting}{native_model_setting}{mix_inputs_setting}{empty_assistant_setting}{template_setting}{low_token_setting}_{max_turns}_turn.json"
     with open(output_path, "w") as f:
         json.dump(results, f, indent=4)
 
@@ -250,32 +297,20 @@ def main(max_turns):
 
 if __name__ == "__main__":
 
-    TEST_HUMAN_MESSAGE = False
-    TEST_MODEL_MESSAGE = True
-    HUMAN_ONLY = False 
-    MODEL_ONLY = False
-
     INJECT_RANDOM_TOPIC = False
     INVESTIGATOR_SETTING = False
-    HUMAN_ONLY = True
-    MODEL_ONLY = False
-    NATIVE_MODEL = False
     MIX_INPUTS = False
-    HUMAN_ONLY = False 
-    EMPTY_ASSISTANT = True
-    NATIVE_MODEL = True
     EMPTY_ASSISTANT = False
-    
-    for max_turns in [5, 10, 20]:
-        # native
-        main(max_turns)
+    HUMAN_ONLY = False
+    MODEL_ONLY = False
+    TEST_HUMAN_MESSAGE = False
+    TEST_MODEL_MESSAGE = True
+    TEMPLATE_TYPE = None
+    LOW_TOKENS = True
 
-    TEST_HUMAN_MESSAGE = True
-    NATIVE_MODEL = False
-    EMPTY_ASSISTANT = False
-    for max_turns in [5, 10, 20]:
-        # ea
-        main(max_turns)
+    for NATIVE_MODEL in [True]:
+        main(max_turns=5)
+
         # Short setting explanations:
         # 1. What message to score: Set either TEST_HUMAN_MESSAGE or TEST_MODEL_MESSAGE to True to test last human input or last model response respectively.
         # 2. What history to use: HUMAN_ONLY = True uses only previous human input, MODEL_ONLY = True uses only previous model responses. If both are set to False, the entire conversation history is utilized.
