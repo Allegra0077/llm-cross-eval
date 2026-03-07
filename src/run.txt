@@ -41,6 +41,7 @@ python -m src.scoring.score_llm_vs_llm \
   --assistant_model Qwen/Qwen3-4B-Instruct-2507 \
   --n_turns_list 0 1 2 3 4 6
 
+
 tmux
 
 
@@ -70,3 +71,21 @@ python src/generation/generate_with_cat_persona.py \
   --seed 0
 
 
+python src/generation/stitched_conv_generation.py \
+  --user_model Qwen/Qwen3-4B-Instruct-2507 \
+  --assistant_model Qwen/Qwen3-4B-Instruct-2507 \
+  --seed_dataset HuggingFaceH4/ultrachat_200k \
+  --seed_split train_sft \
+  --seed_column prompt \
+  --condition hidden_persona \
+  --num_conversations 100 \
+  --num_turns 6 \
+  --seed_shuffle
+
+
+  src/data/conversations/stitched_llm_vs_llm_20260204_073414.jsonl
+
+
+python src/scoring/stitch_scoring.py \
+--input_path src/data/conversations/stitched_llm_vs_llm_20260204_073414.jsonl \
+--assistant_model Qwen/Qwen3-4B-Instruct-2507
