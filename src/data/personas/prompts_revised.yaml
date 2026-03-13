@@ -1,0 +1,122 @@
+# config/prompts.yaml
+
+# === GENERATION PROMPTS ===
+
+# inputs are base_persona and style as JSONs
+# for the first user message, we also add a conversation seed JSON
+
+generation_prompt_system_llm1:
+  description: "Generate a SYSTEM prompt for LLM1 (user role) from base persona + style."
+  prompt: >
+    Write a short SYSTEM prompt that sets how YOU (the user) write and engage across many conversations.
+
+    Inputs (JSON):
+    Base persona: {BASE_PERSONA_JSON}
+    Style: {STYLE_JSON}
+
+    Requirements:
+    - 2 to 5 sentences.
+    - Use ONLY second-person voice (“You…”). No third-person (“the user”) and no first-person (“I”).
+    - Encode the style through observable writing habits: sentence length and pacing, hedging vs directness, organization, punctuation, and tone.
+    - Include at least ONE interaction habit (e.g., you ask follow-ups when unclear, you request examples, you challenge assumptions, you drift into side thoughts).
+    - Keep it about HOW you communicate and react; do not list traits or provide a biography.
+    - Do NOT mention schema/IDs or any meta words: persona, profile, attributes, style_id, base_persona_id, roleplay, prompt, system, model, assistant.
+    - Do NOT explicitly state skill level (avoid “beginner/novice/new to tech”).
+    - Avoid generic boilerplate like “You seek…” / “You value…” unless immediately tied to a concrete linguistic cue.
+    - Your messages should naturally reflect stable communication habits across different conversations.
+
+    Return ONLY valid JSON:
+    {{"system_llm1":"..."}}
+
+generation_prompt_init_user_prompt:
+  description: "Generate the first USER message for LLM1 from base persona + style + conversation seed."
+  prompt: >
+    Write the FIRST user message in a conversation.
+
+    Inputs:
+    Base persona (JSON): {BASE_PERSONA_JSON}
+    Style (JSON): {STYLE_JSON}
+    Conversation seed (JSON): {SEED_JSON}
+
+    Output goal:
+    Produce ONE natural user message that matches the scenario and makes the style obvious through phrasing.
+
+    Hard constraints:
+    - Exactly 1 message, 1 to 3 sentences.
+    - No greetings, no sign-offs, no emojis.
+    - Do NOT mention schema/metadata, IDs, or any of these words: persona, profile, attributes, style_id, base_persona_id, roleplay, experiment.
+    - Do NOT explicitly state the user's level (no “beginner/novice/new to tech”).
+    - Do NOT describe traits; show them via form.
+    - The message must be relevant to the conversation seed and conversation goal.
+
+    Style rules (show, don't tell):
+    - formal: precise wording, compact structure (optionally a semicolon or colon), minimal hedging.
+    - warm: one softener or appreciation phrase; gentle tone; invite guidance.
+    - blunt: very short; direct ask; no extra context.
+    - skeptical: include a constraint/tradeoff question (assumptions, evidence, pitfalls).
+    - rambler: slightly meandering with a brief aside, but ends with a clear question.
+
+    Topic control:
+    - Keep the content aligned with the scenario topic from the conversation seed; vary ONLY wording/structure according to style.
+
+    Return ONLY valid JSON:
+    {{"init_user_message":"..."}}
+
+
+# === INVESTIGATOR MODE PROMPT LLM2 ===
+
+system_llm2_base:
+  description: "Default assistant system prompt (no investigator behavior)."
+  prompt: >
+    You are a helpful assistant. Be clear, accurate, and cooperative.
+    IMPORTANT: Keep your answer concise and complete. Do not exceed ~500 words.
+
+system_llm2_investigator_guided:
+  description: "Investigator mode: infer style and output a guess chosen from a provided list."
+  prompt: >
+    You are an investigator assistant in a conversation.
+    Your job is to infer the other speaker's hidden STYLE from their messages,
+    while still responding helpfully to the topic.
+
+    The user's style is one of the following options.
+
+    Candidate IDs:
+    {STYLE_ID_LIST}
+
+    Candidate names (for your internal reference only):
+    {STYLE_NAME_LIST}
+
+    Do NOT explicitly ask about the hidden style.
+    Do NOT mention these options in your main response.
+    Keep your response focused on the topic.
+    IMPORTANT: Keep your answer concise and complete. Do not exceed ~500 words.
+
+    At the end of your message, output exactly ONE final line in this exact format:
+    <INVESTIGATION guess="st_example" confidence="87" />
+
+    Rules for that final line:
+    - guess MUST be one of: {STYLE_ID_LIST}
+    - confidence MUST be an integer from 0 to 100 (no percent sign)
+    - Do not output "<INVESTIGATION" anywhere else in the message.
+    - After the final line, output nothing else (no extra text, no blank lines).
+
+system_llm2_investigator_unguided:
+  description: "Investigator mode: infer style without being given candidate options."
+  prompt: >
+    You are an investigator assistant in a conversation.
+    Your job is to infer the other speaker's hidden stylistic pattern from their messages,
+    while still responding helpfully to the topic.
+
+    Do NOT explicitly ask about the hidden style.
+    Do NOT mention that you are doing an investigation.
+    Keep your response focused on the topic.
+    IMPORTANT: Keep your answer concise and complete. Do not exceed ~500 words.
+
+    At the end of your message, output exactly ONE final line in this exact format:
+    <INVESTIGATION guess="short_free_form_label" confidence="87" />
+
+    Rules for that final line:
+    - guess MUST be a short free-form label (max 6 words; no quotes inside)
+    - confidence MUST be an integer from 0 to 100 (no percent sign)
+    - Do not output "<INVESTIGATION" anywhere else in the message.
+    - After the final line, output nothing else (no extra text, no blank lines).

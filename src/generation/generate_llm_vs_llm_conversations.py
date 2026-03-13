@@ -18,7 +18,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 # Configuration
 #----------------------
 
-# FIXME: for current outputs, used "Qwen/Qwen-4B-Instruct-2507" for both models, thinking models were hallucinating/ user model acting as assistant too...
+# FIXME: for current outputs, used "Qwen/Qwen-4B-Instruct-2507" for both models
 USER_MODEL_NAME = "Qwen/Qwen3-8B"  # reasoning llm, can switch between thinking and non-thinking mode
 ASSISTANT_MODEL_NAME = "Qwen/Qwen3-8B"
 

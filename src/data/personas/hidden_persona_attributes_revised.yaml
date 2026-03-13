@@ -1,0 +1,155 @@
+# config/hidden_persona_attributes.yaml
+
+# Stable hidden user attributes.
+# A "user" is built as:
+#   one base_persona profile + one style profile
+#
+# IMPORTANT:
+# - topic and conversation goal are NO LONGER stable user attributes.
+# - those now belong to conversation seeds / scenarios.
+
+attribute_values:
+  stable_user:
+    preference_for_details: [concise, balanced, detailed]
+    decision_style: [quick_decider, cautious_comparer, reflective_explorer]
+
+  topic_familiarity:
+    technology: [novice, intermediate, expert]
+    health: [novice, intermediate, expert]
+    travel: [novice, intermediate, expert]
+    finance: [novice, intermediate, expert]
+    relationships: [novice, intermediate, expert]
+    career: [novice, intermediate, expert]
+    education: [novice, intermediate, expert]
+    hobbies: [novice, intermediate, expert]
+
+  style_focused:
+    formality: [formal, neutral, casual]
+    warmth: [warm, neutral, cold]
+    directness: [direct, hedged, indirect]
+    structure: [structured, mixed, stream_of_consciousness]
+    trust_in_assistant: [skeptical, neutral, trusting]
+
+
+profiles:
+  base_persona_id:
+    bp_practical_planner:
+      name: practical_planner
+      description: "Approaches problems by trying to make realistic plans, compare options, and move toward something actionable."
+      preference_for_details: balanced
+      decision_style: cautious_comparer
+      topic_familiarity:
+        technology: intermediate
+        health: novice
+        travel: intermediate
+        finance: novice
+        relationships: intermediate
+        career: intermediate
+        education: intermediate
+        hobbies: intermediate
+
+    bp_curious_learner:
+      name: curious_learner
+      description: "Likes understanding how things work and often asks follow-up questions before feeling satisfied with an answer."
+      preference_for_details: detailed
+      decision_style: reflective_explorer
+      topic_familiarity:
+        technology: novice
+        health: novice
+        travel: intermediate
+        finance: novice
+        relationships: intermediate
+        career: intermediate
+        education: intermediate
+        hobbies: intermediate
+
+    bp_fast_operator:
+      name: fast_operator
+      description: "Prefers quick progress, low friction, and usable next steps over long discussions."
+      preference_for_details: concise
+      decision_style: quick_decider
+      topic_familiarity:
+        technology: intermediate
+        health: novice
+        travel: intermediate
+        finance: intermediate
+        relationships: novice
+        career: intermediate
+        education: intermediate
+        hobbies: intermediate
+
+    bp_analytical_checker:
+      name: analytical_checker
+      description: "Likes comparing options carefully, checking assumptions, and understanding trade-offs before deciding."
+      preference_for_details: detailed
+      decision_style: cautious_comparer
+      topic_familiarity:
+        technology: intermediate
+        health: intermediate
+        travel: intermediate
+        finance: intermediate
+        relationships: novice
+        career: intermediate
+        education: intermediate
+        hobbies: novice
+
+  style_id:
+    st_formal:
+      name: formal
+      description: "Professional tone; well-organized messages; prefers clear structure, precise wording, and minimal small talk."
+      formality: formal
+      warmth: neutral
+      directness: direct
+      structure: structured
+      trust_in_assistant: neutral
+
+    st_warm:
+      name: warm
+      description: "Friendly and encouraging; asks gently, shows appreciation, and invites discussion rather than demanding a single right answer."
+      formality: neutral
+      warmth: warm
+      directness: hedged
+      structure: mixed
+      trust_in_assistant: trusting
+
+    st_blunt:
+      name: blunt
+      description: "Straight to the point; short questions, clear requests, low tolerance for fluff; still generally friendly."
+      formality: casual
+      warmth: warm
+      directness: direct
+      structure: mixed
+      trust_in_assistant: neutral
+
+    st_skeptical:
+      name: skeptical
+      description: "Analytical and careful; challenges claims, asks for evidence and caveats, prefers step-by-step reasoning and clear assumptions."
+      formality: neutral
+      warmth: neutral
+      directness: direct
+      structure: structured
+      trust_in_assistant: skeptical
+
+    st_rambler:
+      name: rambler
+      description: "Thinks out loud; longer, meandering messages with side thoughts; questions may be indirect and unfold gradually."
+      formality: casual
+      warmth: neutral
+      directness: indirect
+      structure: stream_of_consciousness
+      trust_in_assistant: neutral
+
+
+leakage_controls:
+  banned_exact_strings:
+    - "base_persona_id"
+    - "style_id"
+    - "preference_for_details"
+    - "decision_style"
+    - "topic_familiarity"
+    - "formality"
+    - "directness"
+    - "trust_in_assistant"
+    - "attributes"
+    - "roleplay"
+    - "experiment"
