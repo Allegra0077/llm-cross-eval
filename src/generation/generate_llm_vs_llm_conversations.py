@@ -19,14 +19,10 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 #----------------------
 
 # FIXME: for current outputs, used "Qwen/Qwen-4B-Instruct-2507" for both models
-USER_MODEL_NAME = "Qwen/Qwen3-8B"  # reasoning llm, can switch between thinking and non-thinking mode
-ASSISTANT_MODEL_NAME = "Qwen/Qwen3-8B"
+USER_MODEL_NAME = "Qwen/Qwen-4B-Instruct-2507" 
+ASSISTANT_MODEL_NAME = "Qwen/Qwen-4B-Instruct-2507"
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-
-# FIXME:
-# sometimes, I see "<think>" appear in output when using thinking models --> might be source of pollution if dataset and a reason for "user" model to act as assistant too?
-# check if a "no_think" setting exists ?
 
 def parse_args():
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -148,7 +144,7 @@ def generate_reply(
         input_ids = enc["input_ids"].to(model.device)
         attention_mask = enc.get("attention_mask", None)
         if attention_mask is not None:
-            attention_mask = attention_mask.to(model.device)  # ensure on correct device, had runtime error once
+            attention_mask = attention_mask.to(model.device) 
     else:
         input_ids = enc.to(model.device)
         attention_mask = None
@@ -163,17 +159,6 @@ def generate_reply(
         )
     decoded = tokenizer.decode(out[0][input_ids.shape[1]:], skip_special_tokens=True)
     return strip_reasoning(decoded)
-
-
-"""
-def generate_reply(model, tokenizer, messages, max_new_tokens=150, temperature=0.7, retries=2):
-    for attempt in range(retries):
-        raw = generate_reply(model, tokenizer, messages, max_new_tokens, temperature)
-        clean = strip_reasoning(raw)
-        if clean:
-            return clean
-    return "[EMPTY]"
-"""
 
 def load_model(name):
     tokenizer = AutoTokenizer.from_pretrained(name)
