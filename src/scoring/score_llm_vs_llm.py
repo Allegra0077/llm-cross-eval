@@ -54,7 +54,6 @@ def apply_chat_template(tokenizer, messages: List[Dict[str, str]]) -> torch.Tens
         return_tensors="pt",
     )
 
-# FIXME: double check if we can score this way (starting after seed), or if this might affect results (specially for persona-based conversations)
 def get_user_message_indices(messages: List[Dict[str, str]]) -> List[int]:
     """
     stored transcript looks like: user(seed), assistant, user, assistant,...
